@@ -81,14 +81,37 @@ WSGI_APPLICATION = 'beachfront_villas_padel_reservation.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'postgres',
+#         'USER': 'postgres.upgzsgbjaacpxvvcasxr',
+#         'PASSWORD': 'Storm@151994#',
+#         'HOST': 'aws-0-eu-west-2.pooler.supabase.com',
+#         'PORT': '6543',  # usually 5432
+#     }
+# }
+
+
+import os
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('DB_NAME'),
+#         'USER': os.getenv('DB_USER'),
+#         'PASSWORD': os.getenv('DB_PASSWORD'),
+#         'HOST': os.getenv('DB_HOST'),
+#         'PORT': os.getenv('DB_PORT', '5432'),
+#     }
+# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres.upgzsgbjaacpxvvcasxr',
-        'PASSWORD': 'Storm@151994#',
-        'HOST': 'aws-0-eu-west-2.pooler.supabase.com',
-        'PORT': '6543',  # usually 5432
+        'NAME': 'beachfront_villas_padel_reservation',
+        'USER': 'psql',
+        'PASSWORD': 'psql',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -128,6 +151,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
