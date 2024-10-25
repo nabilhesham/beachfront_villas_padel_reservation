@@ -1,0 +1,17 @@
+{
+    "build": {
+      "env": {
+        "PYTHON_VERSION": "3.11.10"
+      }
+    },
+    "start": {
+      "command": "gunicorn beachfront_villas_padel_reservation.wsgi:application --bind 0.0.0.0:8000"
+    },
+    "deploy": {
+      "environment": {
+        "SECRET_KEY": "rhdw2k9KT7kwrjDKRWOIW5DCiYXA5f_IhTYd41wSoHyHO4dTKFuP0o9riUG3ClpImI4",
+        "DATABASE_URL": "postgresql://postgres:WWihBdBEWUwSXfLYYTzpohlRrdwJQqIm@postgres.railway.internal:5432/railway"
+      }
+    }
+  }
+  
