@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-y33pg40a1)+70$e%g!5ahy6^&gh-#l($0j^gq4va=f32$0lx*#'
+# SECRET_KEY = 'django-insecure-y33pg40a1)+70$e%g!5ahy6^&gh-#l($0j^gq4va=f32$0lx*#'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-y33pg40a1)+70$e%g!5ahy6^&gh-#l($0j^gq4va=f32$0lx*#')  # Use a default for local dev
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -93,7 +97,6 @@ WSGI_APPLICATION = 'beachfront_villas_padel_reservation.wsgi.application'
 # }
 
 
-import os
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
