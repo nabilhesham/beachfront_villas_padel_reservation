@@ -11,12 +11,11 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-
 # Copy project files
 COPY . .
 
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
-# Default command to run the Django development server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Default command to run migrations, initialize matches, and start the server
+CMD ["sh", "-c", "python manage.py migrate && python manage.py initialize_matches && python manage.py runserver 0.0.0.0:8000"]

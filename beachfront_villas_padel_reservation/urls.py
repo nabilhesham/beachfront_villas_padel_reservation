@@ -18,13 +18,15 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
-from home.views import home_view
+# from home.views import home_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('', views.index, name='home'),
-    path('', home_view, name='home')
+    # path('', home_view, name='home'),
     # path('', include('home.urls'))    ,
+
+    path('', include('home.urls')),
 ]
 
 # Serve static and media files during development

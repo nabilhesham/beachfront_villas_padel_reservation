@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <style>
+        .fc-green { background-color: #8fdf82 !important; }
+        .fc-yellow { background-color: yellow !important; }
+        .fc-red { background-color: red !important; }
+
+        .fc-timegrid-slot .fc-timegrid-slot-label {
+            color: black;
+        }
+        #calendar-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 85%; /* Ensures the calendar occupies 95% of the page height */
+            margin: auto;
+            width: 95%; /* Ensures the calendar occupies 95% of the page width */
+        }
+        #calendar {
+            width: 100%;
+            height: 100%;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .fc .fc-toolbar.fc-header-toolbar {
+            margin-bottom: 0 !important;
+        }
+
+        .fc-event-custom {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 5px;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div id="calendar-container">
+        <div id="calendar"></div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        // Convert to local datetime and format as 'YYYY-MM-DDTHH:mm:ss' without timezone
+        function formatDate(date) {
+            let year = date.getFullYear();
+            let month = String(date.getMonth() + 1).padStart(2, '0');
+            let day = String(date.getDate()).padStart(2, '0');
+            let hours = String(date.getHours()).padStart(2, '0');
+            let minutes = String(date.getMinutes()).padStart(2, '0');
+            let seconds = String(date.getSeconds()).padStart(2, '0');
+            return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Set Calendar Start & End DateTime
+            let start_calendar = new Date(new Date().getTime())
+            start_calendar.setMinutes(0, 0, 0);  // Set minutes, seconds, and milliseconds to 0
+
+            let end_calendar = new Date();
+            end_calendar.setHours(end_calendar.getHours() + 72);
+            end_calendar.setMinutes(0, 0, 0);  // Set minutes, seconds, and milliseconds to 0
+
+            // Convert Dates
+            let startDate = formatDate(start_calendar);
+            let endDate = formatDate(end_calendar);
+
+            console.log(`startDate: ${startDate}`)
+            console.log(`endDate: ${endDate}`)
+
+            let calendarEl = document.getElementById('calendar');
+            let calendar = new FullCalendar.Calendar(calendarEl, {
+                timeZone: 'local',  // Ensure FullCalendar uses the local timezone
+                initialView: 'timeGrid',
+                views: {
+                    timeGrid: {
+                        type: 'timeGrid',
+                        duration: { days: 3 }, // 3 days in view
+                        buttonText: '3 day'
+                    },
+                },
+                headerToolbar: {
+                    left: '',
+                    center: 'title',
+                    right: '',
+                },
+                allDaySlot: false,
+                slotDuration: '01:00:00',
+                nowIndicator: true,
+                validRange: {
+                    start: start_calendar,
+                    end: end_calendar
+                },
+
+                events: function(info, successCallback, failureCallback) {
+                    // Fetch events (matches) from the backend based on the current visible date range
+                    fetch(`/matches?start_date=${startDate}&end_date=${endDate}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // create data events
+                        const events = data.matches.map(match => ({
+                            title: `Match`,
+                            start: match.start_time,
+                            end: match.end_time,
+                            extendedProps: {
+                                mainPlayers: match.main_players,
+                                reservePlayers: match.reserve_players,
+                            }
+                        }));
+                        successCallback(events);  // Pass the processed events to the calendar
+                    })
+                    .catch(error => failureCallback(error));  // Handle errors if needed
+                },
+                slotLabelFormat: { hour: 'numeric', minute: '2-digit', omitZeroMinute: false },
+                eventContent: function(arg) {
+                    const { event } = arg;
+                    const mainPlayers = event.extendedProps.mainPlayers.length;
+                    const reservePlayers = event.extendedProps.reservePlayers.length;
+                    let bgColor = (mainPlayers + reservePlayers) === 0 ? 'green' :
+                                  (mainPlayers + reservePlayers) <= 4 ? 'green' :
+                                  (mainPlayers + reservePlayers) <= 8 ? 'yellow' : 'red';
+
+                    return {
+                        html: `
+                            <div class="fc-event-custom" style="background-color: ${bgColor};">
+                                <span>Main: <strong>${mainPlayers}</strong> - Reserve: <strong>${reservePlayers}</strong></span>
+                            </div>
+                        `
+                    };
+                },
+                eventClick: function(info) {
+                    openMatchDetailsModal(
+                        {
+                            title: info.event.title,
+                            start: formatDate(info.event.start),
+                            end: formatDate(info.event.end),
+                            mainPlayers: info.event.extendedProps.mainPlayers,
+                            reservePlayers: info.event.extendedProps.reservePlayers,
+                        }
+                    )
+                }
+            });
+
+            calendar.render();
+        });
+
+        // Function to open a modal with match details
+        function openMatchDetailsModal(matchData) {
+            console.log(matchData)
+            // Example of how to use the match data
+            alert('Match Details: \nStart Time: ' + matchData.start +
+                  '\nEnd Time: ' + matchData.end +
+                  '\nMain Players: ' + matchData.mainPlayers.join(', ') +
+                  '\nReserve Players: ' + matchData.reservePlayers.join(', '));
+        }
+    </script>
+{% endblock %}
+

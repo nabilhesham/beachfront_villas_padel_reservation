@@ -3,6 +3,10 @@ services:
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
+#    command: >
+#      bash -c "python manage.py makemigrations
+#      && python manage.py migrate
+#      && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/app
       - static_volume:/app/staticfiles  # Map static files to Docker volume
