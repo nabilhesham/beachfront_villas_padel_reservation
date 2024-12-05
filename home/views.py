@@ -1,62 +1,78 @@
 # Django imports
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.utils import timezone
 from datetime import timedelta, datetime
 from django.utils.dateparse import parse_datetime
+from django.contrib.auth import authenticate, login, update_session_auth_hash,logout
+from django.contrib.auth.forms import PasswordChangeForm, AuthenticationForm
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 # App imports
 from .models import Match, Reservation
+from .decorators import custom_login_required
+
+############################# Auth Views ##########################################
+
+def login_view(request):
+    if request.user.is_authenticated:
+        if request.user.default_password is False:
+            return redirect('home')
+
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            if user is not None:
+                # Check if this is the first time the user is logging in
+                login(request, user)
+                if user.default_password:
+                    messages.success(request, f"first time login please change your password!")
+                    return redirect('change-password')
+                messages.success(request, f"Welcome, {user.username}")
+                return redirect('home')  # Redirect to home page after successful login
+        else:
+            # Add a non-field error if form is invalid
+            messages.error(request, "Invalid username or password.")
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'auth/login.html', {'form': form, 'user': request.user})
 
 
+def change_password(request):
+    if request.method == 'POST':
+        # Here you would handle the logic to change the user's password
+        # e.g., using `password_change` or `set_password` method
+        new_password = request.POST.get('password')
+        user = request.user
+        user.set_password(new_password)
+        user.default_password = False  # Set this to False once password is updated
+        user.save()
+        messages.success(request, "Your password has been updated.")
+        return redirect('login')  # Redirect to login page after password change
+    return render(request, 'auth/change_password.html', {'user': request.user})
 
 
-############################# views ##########################################
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('login')  # Redirect to login page after logout
+
+
+############################# App Views ##########################################
+
+@custom_login_required
 def home_view(request):
-    return render(request, 'base.html')
+    return redirect('calendar')
 
+@custom_login_required
 def calendar_view(request):
-    return render(request, 'calendar.html')
-
-
-
-
-
+    return render(request, 'calendar.html', {'user': request.user})
 
 ############################# Data ##########################################
-def match_data(request):
-    today = timezone.now()
-    future_date = today + timedelta(days=2)
-    matches = Match.objects.filter(start_time__date__gte=today.date(), start_time__date__lte=future_date.date())
-
-    match_data = []
-    for match in matches:
-        main_count = match.main_players_count
-        reserve_count = match.reserve_players_count
-        status = 'green' if main_count < 4 else 'yellow' if main_count == 4 and reserve_count < 4 else 'red'
-
-        match_data.append({
-            "id": match.id,
-            "start_time": match.start_time.isoformat(),
-            "end_time": match.end_time.isoformat(),
-            # "main_count": main_count,
-            # "reserve_count": reserve_count,
-            'main_players': [user.username for user in match.main_players.all()],
-            'reserve_players': [user.username for user in match.reserve_players.all()],
-            "status": status
-        })
-    # match_data = [
-    #     {
-    #         "id": 1,
-    #         "start": "2024-11-16T18:00:00",
-    #         "end": "2024-11-16T19:00:00",
-    #         "main_count": 0,
-    #         "reserve_count": 0,
-    #         "status": "green"
-    #     }
-    # ]
-    return JsonResponse(match_data, safe=False)
-
 
 def get_matches(request):
     start_date = request.GET.get('start_date')
@@ -99,33 +115,3 @@ def get_matches(request):
         current_time = end_time
 
     return JsonResponse({'matches': matches})
-
-
-def get_or_create_match(request, date):
-    # Convert the string date (YYYY-MM-DD) to a naive datetime object (without time zone)
-    match_date = datetime.strptime(date, "%Y-%m-%d").date()  # Naive date (no timezone)
-
-    # Try to find an existing match for that day
-    match = Match.objects.filter(start_time__date=match_date).first()
-
-    if not match:
-        # If no match exists, create a new one with default values
-        start_time = datetime.combine(match_date, datetime.min.time())  # Naive datetime
-        end_time = start_time + timedelta(hours=1)  # 1 hour match duration (default)
-
-        match = Match.objects.create(
-            start_time=start_time,
-            end_time=end_time
-        )
-
-        # Optionally add default players or other fields to this new match
-        match.save()
-
-    # Return match details as JSON
-    return JsonResponse({
-        'start_time': match.start_time.isoformat(),
-        'end_time': match.end_time.isoformat(),
-        'main_players': [user.username for user in match.main_players.all()],
-        'reserve_players': [user.username for user in match.reserve_players.all()],
-        'id': match.id,
-    })

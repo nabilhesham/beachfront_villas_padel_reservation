@@ -12,11 +12,26 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from decouple import Config, RepositoryEnv
+
+
+# Check for the environment (default to 'production')
+# ENVIRONMENT = os.getenv('DJANGO_ENV', 'production')
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
+
+# Get the DJANGO_ENV value
+django_env = os.getenv('DJANGO_ENV', 'local')  # Default to 'local' if not set
+
+# Set the path for the appropriate .env file based on DJANGO_ENV
+env_file = '.env'
+
+# Initialize Config with the selected .env file
+# config = Config(search_path=os.path.dirname(__file__), env_file=env_file)
+config = Config(RepositoryEnv(os.path.join(BASE_DIR, env_file)))
 
 
 # Quick-start development settings - unsuitable for production
@@ -24,14 +39,14 @@ SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-y33pg40a1)+70$e%g!5ahy6^&gh-#l($0j^gq4va=f32$0lx*#'
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')  # Use a default for local dev
+SECRET_KEY = config('DJANGO_SECRET_KEY')  # Use a default for local dev
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", "*").split(",")
 print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
 
 
@@ -110,16 +125,35 @@ WSGI_APPLICATION = 'beachfront_villas_padel_reservation.wsgi.application'
 #         'PORT': os.getenv('DB_PORT', '5432'),
 #     }
 # }
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('POSTGRES_HOST'),
-        'PORT': os.getenv('POSTGRES_PORT'),
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('POSTGRES_DB'),
+#         'USER': os.getenv('POSTGRES_USER'),
+#         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+#         'HOST': os.getenv('POSTGRES_HOST'),
+#         'PORT': os.getenv('POSTGRES_PORT'),
+#     }
+# }
+
+if django_env == 'local':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
+else:  # Production (PostgreSQL)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('POSTGRES_DB'),
+            'USER': config('POSTGRES_USER'),
+            'PASSWORD': config('POSTGRES_PASSWORD'),
+            'HOST': config('POSTGRES_HOST'),
+            'PORT': config('POSTGRES_PORT'),
+        }
+    }
 
 # DATABASE_URL = os.environ.get('DATABASE_URL')
 
@@ -153,6 +187,17 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = False
+
+
+# User Model Path
+AUTH_USER_MODEL = 'home.CustomUser'
+
+# custom login URL
+LOGIN_URL = '/login/'
+
+# URL to redirect to after successful login
+LOGIN_REDIRECT_URL = '/'
+
 
 
 # Static files (CSS, JavaScript, Images)

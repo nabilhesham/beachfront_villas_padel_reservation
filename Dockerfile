@@ -1,6 +1,9 @@
 # Dockerfile
 FROM python:3.11.10-slim
 
+# Set environment variables for Django settings
+ENV DJANGO_ENV=local
+
 # Set environment variable for Python
 ENV PYTHONUNBUFFERED=1
 
@@ -17,5 +20,17 @@ COPY . .
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
+# Migrate DB and run scripts
+RUN python manage.py migrate
+
+
+# Copy the entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Set the entrypoint script to run when the container starts
+ENTRYPOINT ["/entrypoint.sh"]
+
+
 # Default command to run migrations, initialize matches, and start the server
-CMD ["sh", "-c", "python manage.py migrate && python manage.py initialize_matches && python manage.py runserver 0.0.0.0:8000"]
+CMD ["sh", "-c", "python manage.py runserver 0.0.0.0:8000"]
