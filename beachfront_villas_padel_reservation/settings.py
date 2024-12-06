@@ -43,7 +43,10 @@ SECRET_KEY = config('DJANGO_SECRET_KEY')  # Use a default for local dev
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if django_env == 'local':
+    DEBUG = True
+else:
+    DEBUG = False
 
 # ALLOWED_HOSTS = []
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", "*").split(",")
@@ -182,7 +185,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
 
 USE_I18N = True
 

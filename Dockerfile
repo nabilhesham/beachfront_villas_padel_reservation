@@ -2,7 +2,7 @@
 FROM python:3.11.10-slim
 
 # Set environment variables for Django settings
-ENV DJANGO_ENV=local
+#ENV DJANGO_ENV=local
 
 # Set environment variable for Python
 ENV PYTHONUNBUFFERED=1
