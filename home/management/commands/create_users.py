@@ -11,6 +11,7 @@ class Command(BaseCommand):
         users = [
             {"username": "user_1", "password": "user_1"},
             {"username": "user_2", "password": "user_2"},
+            {"username": "user_3", "password": "user_3"},
         ]
         admin_username = "admin"
         admin_password = "admin"
