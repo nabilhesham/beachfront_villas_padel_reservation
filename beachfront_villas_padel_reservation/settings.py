@@ -52,6 +52,15 @@ else:
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", "*").split(",")
 print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://beachfront-padel-reservation.up.railway.app',
+    'http://beachfront-padel-reservation.up.railway.app',  # Add if using http
+]
+
+CORS_ALLOWED_ORIGINS = [
+    'https://beachfront-padel-reservation.up.railway.app',
+]
+
 
 # Application definition
 
