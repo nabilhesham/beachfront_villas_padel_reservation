@@ -62,6 +62,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://beachfront-padel-reservation.up.railway.app',
 ]
 
+# test
 
 # Application definition
 
