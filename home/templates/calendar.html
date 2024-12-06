@@ -10,6 +10,7 @@
             color: black;
         }
         #calendar {
+            position: relative;
             width: 100%;
             height: 100%;
             border: 1px solid rgba(0, 0, 0, 0.1);
@@ -44,11 +45,20 @@
 {% endblock %}
 
 {% block content %}
-<div id="calendar"></div>
+    <div id="calendarLoader" class="d-none position-absolute w-100 text-center" style="top: 50%; transform: translateY(-50%);">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    <div id="calendar"></div>
 {% endblock %}
 
 {% block javascript %}
     <script>
+        // Global Vars
+        let modal;
+        let calendar;
+
         // Convert to local datetime and format as 'YYYY-MM-DDTHH:mm:ss' without timezone
         function formatDate(date) {
             let year = date.getFullYear();
@@ -64,10 +74,11 @@
 
             // Set Calendar Start & End DateTime
             let start_calendar = new Date(new Date().getTime())
+            start_calendar.setHours(start_calendar.getHours());
             start_calendar.setMinutes(0, 0, 0);  // Set minutes, seconds, and milliseconds to 0
 
             let end_calendar = new Date();
-            end_calendar.setHours(end_calendar.getHours() + 72);
+            end_calendar.setHours(start_calendar.getHours() + hoursToDisplayDataInCalendar);
             end_calendar.setMinutes(0, 0, 0);  // Set minutes, seconds, and milliseconds to 0
 
             // Convert Dates
@@ -77,15 +88,15 @@
             console.log(`startDate: ${startDate}`)
             console.log(`endDate: ${endDate}`)
 
-            let calendarEl = document.getElementById('calendar');
-            let calendar = new FullCalendar.Calendar(calendarEl, {
+            const calendarEl = document.getElementById('calendar');
+            calendar = new FullCalendar.Calendar(calendarEl, {
                 timeZone: 'local',  // Ensure FullCalendar uses the local timezone
                 initialView: 'timeGrid',
                 views: {
                     timeGrid: {
                         type: 'timeGrid',
-                        duration: { days: 3 }, // 3 days in view
-                        buttonText: '3 day'
+                        duration: { days: daysToDisplayInCalendar }, // days in view
+                        buttonText: `${daysToDisplayInCalendar} days`
                     },
                 },
                 headerToolbar: {
@@ -100,10 +111,17 @@
                     start: start_calendar,
                     end: end_calendar
                 },
-
+                loading: function(isLoading) {
+                    const loader = document.getElementById('calendarLoader');  // Loader element
+                    if (isLoading) {
+                        loader.classList.remove('d-none');
+                    } else {
+                        loader.classList.add('d-none');
+                    }
+                },
                 events: function(info, successCallback, failureCallback) {
                     // Fetch events (matches) from the backend based on the current visible date range
-                    fetch(`/matches?start_date=${startDate}&end_date=${endDate}`)
+                    fetch(`/api/matches?start_date=${startDate}&end_date=${endDate}`)
                     .then(response => response.json())
                     .then(data => {
                         // create data events
@@ -129,15 +147,40 @@
                                   (mainPlayers + reservePlayers) <= 4 ? 'green' :
                                   (mainPlayers + reservePlayers) <= 8 ? 'yellow' : 'red';
 
+                    const matchStartTime = new Date(event.start); // Match's start time
+                    const currentTime = new Date(); // Current time
+                    const timeDifference = matchStartTime - currentTime; // Difference in milliseconds
+
+                    // Check if the match is playing Now
+                    const isMatchPlayingNow = timeDifference <= 0;
+                    if (isMatchPlayingNow === true){
+                        bgColor = "#777"
+                    }
+
+                    // construct html content for the cell
+                    let cellHtml = `<div class="fc-event-custom" style="background-color: ${bgColor};">`
+                    if (isMatchPlayingNow === true){
+                        cellHtml += `<span>Playing Now</span>`
+                    }else{
+                        cellHtml += `<span>Main: <strong>${mainPlayers}</strong> - Reserve: <strong>${reservePlayers}</strong></span>`
+                    }
+
                     return {
-                        html: `
-                            <div class="fc-event-custom" style="background-color: ${bgColor};">
-                                <span>Main: <strong>${mainPlayers}</strong> - Reserve: <strong>${reservePlayers}</strong></span>
-                            </div>
-                        `
+                        html: cellHtml
                     };
                 },
                 eventClick: function(info) {
+
+                    const matchStartTime = new Date(info.event.start); // Match's start time
+                    const currentTime = new Date(); // Current time
+                    const timeDifference = matchStartTime - currentTime; // Difference in milliseconds
+
+                    // Time to make the match open for reservation
+                    const minutesInMillis = MinutesBeforeMatchReservationClose * 60 * 1000; // minutes in milliseconds
+
+                    // Check if the match is open for reservation before the next millis minutes
+                    const isMatchOpenForReservation = timeDifference > minutesInMillis && timeDifference >= 0;
+
                     openMatchDetailsModal(
                         {
                             title: info.event.title,
@@ -145,23 +188,129 @@
                             end: formatDate(info.event.end),
                             mainPlayers: info.event.extendedProps.mainPlayers,
                             reservePlayers: info.event.extendedProps.reservePlayers,
+                            isMatchOpenForReservation: isMatchOpenForReservation,
                         }
                     )
                 }
             });
 
             calendar.render();
+
+            // Refresh data every 1 minute
+            const interval = setInterval(function() {
+                console.log('refresh')
+                calendar.refetchEvents();  // Refresh the calendar data
+             }, MinutesToRefreshCalendarData * 60 * 1000);
         });
 
         // Function to open a modal with match details
         function openMatchDetailsModal(matchData) {
-            console.log(matchData)
-            // Example of how to use the match data
-            alert('Match Details: \nStart Time: ' + matchData.start +
-                  '\nEnd Time: ' + matchData.end +
-                  '\nMain Players: ' + matchData.mainPlayers.join(', ') +
-                  '\nReserve Players: ' + matchData.reservePlayers.join(', '));
+            // Create the Main Players table
+            const mainPlayersTable = matchData.mainPlayers.length > 0 ?
+                matchData.mainPlayers.map(player => `<tr><td>${player}</td></tr>`).join('') :
+                '<tr><td>0</td></tr>';  // If no players, render 0
+
+            // Create the Reserve Players table
+            const reservePlayersTable = matchData.reservePlayers.length > 0 ?
+                matchData.reservePlayers.map(player => `<tr><td>${player}</td></tr>`).join('') :
+                '<tr><td>0</td></tr>';  // If no players, render 0
+
+            // modal HTML
+            const modalContent = `
+                <div class="modal fade" id="matchDetailsModal" tabindex="-1" aria-labelledby="matchDetailsModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="matchDetailsModalLabel">Match Details</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h5>Match Details</h5>
+                                {#<p><strong>Start Time:</strong> ${matchData.start}</p>#}
+                                {#<p><strong>End Time:</strong> ${matchData.end}</p>#}
+
+                                <!-- Main Players Table -->
+                                <table class="table table-bordered table-responsive">
+                                    <thead>
+                                        <tr><th class="table-dark">Main Players</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        ${mainPlayersTable}  <!-- Insert the main players here -->
+                                    </tbody>
+                                </table>
+
+                                <!-- Reserve Players Table -->
+                                <table class="table table-bordered table-responsive">
+                                    <thead>
+                                        <tr><th class="table-dark">Reserve Players</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        ${reservePlayersTable}  <!-- Insert the reserve players here -->
+                                    </tbody>
+                                </table>
+
+                                <select id="playerType" class="form-control" style="cursor: pointer;" ${matchData.isMatchOpenForReservation ? '' : 'disabled'}>
+                                    <option value="main">Main Player</option>
+                                    <option value="reserve">Reserve Player</option>
+                                </select>
+                                <button id="togglePlayerReservationButton" class="btn btn-dark mt-3 w-100" ${matchData.isMatchOpenForReservation ? '' : 'disabled'}>
+                                    Add/Remove Player
+                                </button>
+                                <div id="modalLoader" class="d-none text-center mt-3">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // init modal event
+            document.body.insertAdjacentHTML('beforeend', modalContent);
+            modal = new bootstrap.Modal(document.getElementById('matchDetailsModal'));
+            modal.show();
+
+            // toggle player reservation event
+            document.getElementById('togglePlayerReservationButton').addEventListener('click', function () {
+                const playerType = document.getElementById('playerType').value;
+                togglePlayer(matchData, playerType);
+            });
+
+            // remove modal event
+            document.getElementById('matchDetailsModal').addEventListener('hidden.bs.modal', function () {
+                document.getElementById('matchDetailsModal').remove();
+            });
         }
+
+        function togglePlayer(matchData, playerType) {
+            // init loader
+            const loader = document.getElementById('modalLoader');
+            loader.classList.remove('d-none');  // Show loader
+            document.getElementById('togglePlayerReservationButton').disabled = true;
+
+            fetch(`/api/toggle-player-reservation/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                body: JSON.stringify({
+                    match_start: matchData.start,
+                    match_end: matchData.end,
+                    player_type: playerType,
+                })
+            })
+            .then(response => response.json())
+            .then(() => {
+                loader.classList.add('d-none');  // Hide loader
+                modal.hide();  // Close the modal
+                calendar.refetchEvents();  // Refresh the calendar data
+            })
+            .catch(error => alert('Error updating player: ' + error))
+        }
+
     </script>
 {% endblock %}
 
