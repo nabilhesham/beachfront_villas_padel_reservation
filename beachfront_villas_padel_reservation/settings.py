@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 from decouple import Config, RepositoryEnv
+import dj_database_url
 
 
 # Check for the environment (default to 'production')
@@ -157,15 +158,18 @@ if django_env == 'local':
     }
 else:  # Production (PostgreSQL)
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('POSTGRES_DB'),
-            'USER': config('POSTGRES_USER'),
-            'PASSWORD': config('POSTGRES_PASSWORD'),
-            'HOST': config('POSTGRES_HOST'),
-            'PORT': config('POSTGRES_PORT'),
-        }
+        'default': dj_database_url.config(default=config('DATABASE_URL'))
     }
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.postgresql',
+    #         'NAME': config('POSTGRES_DB'),
+    #         'USER': config('POSTGRES_USER'),
+    #         'PASSWORD': config('POSTGRES_PASSWORD'),
+    #         'HOST': config('POSTGRES_HOST'),
+    #         'PORT': config('POSTGRES_PORT'),
+    #     }
+    # }
 
 # DATABASE_URL = os.environ.get('DATABASE_URL')
 
