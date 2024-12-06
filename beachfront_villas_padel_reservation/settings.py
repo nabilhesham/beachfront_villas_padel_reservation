@@ -62,8 +62,6 @@ CORS_ALLOWED_ORIGINS = [
     'https://beachfront-padel-reservation.up.railway.app',
 ]
 
-# test
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -222,6 +220,8 @@ LOGIN_REDIRECT_URL = '/'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Directory where static files are collected
+# Directories to look for static files
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 # Media files (for user-uploaded content)
 MEDIA_URL = '/media/'
