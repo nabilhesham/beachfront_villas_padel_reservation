@@ -12,7 +12,7 @@ if [ "$DJANGO_ENV" = "production" ]; then
     echo "Environment is production. Running production setup..."
     # Collect static files
     echo "Collecting static files..."
-    mkdir -p /app/static
+    mkdir -p /app/staticfiles
     python manage.py collectstatic --noinput
 s
 else

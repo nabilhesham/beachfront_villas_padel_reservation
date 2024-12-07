@@ -172,12 +172,11 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Directory where static files are collected
-STATICFILES_DIRS = None
-STATICFILES_STORAGE = None
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Directory where collectstatic collects files
+
 if django_env == 'production':
-    # Directories to look for static files
-    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+    # STATICFILES_DIRS is not necessary in production unless you have additional directories
+    STATICFILES_DIRS = []  # Ensure this is an empty list or omit it altogether
 
     # Compress static files for performance
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
