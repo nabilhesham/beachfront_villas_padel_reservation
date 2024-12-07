@@ -46,7 +46,7 @@ else:
 # ALLOWED_HOSTS = []
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", "*").split(",")
 
-if django_env != 'local':
+if django_env == 'production':
     CSRF_TRUSTED_ORIGINS = [
         'https://beachfront-padel-reservation.up.railway.app',
         'http://beachfront-padel-reservation.up.railway.app',  # Add if using http
@@ -70,7 +70,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = []
 
-if django_env != 'local':
+if django_env == 'production':
     MIDDLEWARE += ['whitenoise.middleware.WhiteNoiseMiddleware']
 
 MIDDLEWARE += [
@@ -117,16 +117,6 @@ else:  # Production (PostgreSQL)
     DATABASES = {
         'default': dj_database_url.config(default=config('DATABASE_URL'))
     }
-    # DATABASES = {
-    #     'default': {
-    #         'ENGINE': 'django.db.backends.postgresql',
-    #         'NAME': config('POSTGRES_DB'),
-    #         'USER': config('POSTGRES_USER'),
-    #         'PASSWORD': config('POSTGRES_PASSWORD'),
-    #         'HOST': config('POSTGRES_HOST'),
-    #         'PORT': config('POSTGRES_PORT'),
-    #     }
-    # }
 
 # DATABASE_URL = os.environ.get('DATABASE_URL')
 
@@ -183,7 +173,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Directory where static files are collected
-if django_env != 'local':
+STATICFILES_DIRS = None
+STATICFILES_STORAGE = None
+if django_env == 'production':
     # Directories to look for static files
     STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
