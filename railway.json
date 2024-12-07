@@ -12,7 +12,6 @@
         "SECRET_KEY": "rhdw2k9KT7kwrjDKRWOIW5DCiYXA5f_IhTYd41wSoHyHO4dTKFuP0o9riUG3ClpImI4",
         "DATABASE_URL": "postgresql://postgres:WWihBdBEWUwSXfLYYTzpohlRrdwJQqIm@postgres.railway.internal:5432/railway"
       }
-    },
-    "dockerComposeFile": "docker-compose-prod.yaml"
+    }
   }
   
