@@ -14,7 +14,6 @@ if [ "$DJANGO_ENV" = "production" ]; then
     echo "Collecting static files..."
     mkdir -p /app/staticfiles
     python manage.py collectstatic --noinput
-s
 else
     echo "Environment is local. Skipping collectstatic..."
 fi
