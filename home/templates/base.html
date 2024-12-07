@@ -90,6 +90,13 @@
 
         <!-- Global JS -->
         <script>
+            // Detect tab/browser close event
+            window.addEventListener('beforeunload', function () {
+                // Make a request to log the user out
+                navigator.sendBeacon('/logout/');
+            });
+
+            // Global Variables
             let hoursToDisplayDataInCalendar = 48;
             let daysToDisplayInCalendar = 3;
             let MinutesBeforeMatchReservationClose = 30;

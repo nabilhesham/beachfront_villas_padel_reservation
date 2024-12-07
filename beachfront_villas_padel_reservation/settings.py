@@ -16,10 +16,6 @@ from decouple import Config, RepositoryEnv
 import dj_database_url
 
 
-# Check for the environment (default to 'production')
-# ENVIRONMENT = os.getenv('DJANGO_ENV', 'production')
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
@@ -31,7 +27,6 @@ django_env = os.getenv('DJANGO_ENV', 'local')  # Default to 'local' if not set
 env_file = '.env'
 
 # Initialize Config with the selected .env file
-# config = Config(search_path=os.path.dirname(__file__), env_file=env_file)
 config = Config(RepositoryEnv(os.path.join(BASE_DIR, env_file)))
 
 
@@ -39,7 +34,6 @@ config = Config(RepositoryEnv(os.path.join(BASE_DIR, env_file)))
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-y33pg40a1)+70$e%g!5ahy6^&gh-#l($0j^gq4va=f32$0lx*#'
 SECRET_KEY = config('DJANGO_SECRET_KEY')  # Use a default for local dev
 
 
@@ -51,16 +45,16 @@ else:
 
 # ALLOWED_HOSTS = []
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", "*").split(",")
-print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://beachfront-padel-reservation.up.railway.app',
-    'http://beachfront-padel-reservation.up.railway.app',  # Add if using http
-]
+if django_env != 'local':
+    CSRF_TRUSTED_ORIGINS = [
+        'https://beachfront-padel-reservation.up.railway.app',
+        'http://beachfront-padel-reservation.up.railway.app',  # Add if using http
+    ]
 
-CORS_ALLOWED_ORIGINS = [
-    'https://beachfront-padel-reservation.up.railway.app',
-]
+    CORS_ALLOWED_ORIGINS = [
+        'https://beachfront-padel-reservation.up.railway.app',
+    ]
 
 # Application definition
 
@@ -74,7 +68,12 @@ INSTALLED_APPS = [
     'home'
 ]
 
-MIDDLEWARE = [
+MIDDLEWARE = []
+
+if django_env != 'local':
+    MIDDLEWARE += ['whitenoise.middleware.WhiteNoiseMiddleware']
+
+MIDDLEWARE += [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -107,48 +106,6 @@ WSGI_APPLICATION = 'beachfront_villas_padel_reservation.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'postgres',
-#         'USER': 'postgres.upgzsgbjaacpxvvcasxr',
-#         'PASSWORD': 'Storm@151994#',
-#         'HOST': 'aws-0-eu-west-2.pooler.supabase.com',
-#         'PORT': '6543',  # usually 5432
-#     }
-# }
-
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.getenv('DB_NAME'),
-#         'USER': os.getenv('DB_USER'),
-#         'PASSWORD': os.getenv('DB_PASSWORD'),
-#         'HOST': os.getenv('DB_HOST'),
-#         'PORT': os.getenv('DB_PORT', '5432'),
-#     }
-# }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.getenv('POSTGRES_DB'),
-#         'USER': os.getenv('POSTGRES_USER'),
-#         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-#         'HOST': os.getenv('POSTGRES_HOST'),
-#         'PORT': os.getenv('POSTGRES_PORT'),
-#     }
-# }
-
 if django_env == 'local':
     DATABASES = {
         'default': {
@@ -215,17 +172,23 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
 
+# Session Settings
+SESSION_COOKIE_AGE = 3600  # Session ends when the browser is closed after 1 hour in seconds
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Directory where static files are collected
-# Directories to look for static files
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+if django_env != 'local':
+    # Directories to look for static files
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
-# Compress static files for performance
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    # Compress static files for performance
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files (for user-uploaded content)
 MEDIA_URL = '/media/'
