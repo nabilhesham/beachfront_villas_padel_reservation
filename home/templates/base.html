@@ -53,8 +53,14 @@
                               Welcome {{ user.username }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end navbar-light bg-light" aria-labelledby="navbarDropdown">
-                              <li><a class="dropdown-item" href="{% url 'user-profile' %}">Profile</a></li>
-                              <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                                <li><a class="dropdown-item" href="{% url 'user-profile' %}">Profile</a></li>
+                                <hr />
+                                <li>
+                                    <form class="d-flex" method="POST" action="{% url 'logout' %}">
+                                        {% csrf_token %}
+                                        <button class="dropdown-item" type="submit">Logout</button>
+                                    </form>
+                                </li>
                             </ul>
                           </li>
                         </ul>
