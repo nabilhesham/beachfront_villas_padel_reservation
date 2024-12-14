@@ -6,9 +6,10 @@ from datetime import timedelta, datetime
 from django.utils.dateparse import parse_datetime
 from django.contrib.auth import authenticate, login, update_session_auth_hash,logout
 from django.contrib.auth.forms import PasswordChangeForm, AuthenticationForm
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
 from django.core.exceptions import ValidationError
 
 # general Imports
@@ -17,6 +18,9 @@ import json
 # App imports
 from .models import Match, Reservation
 from .decorators import custom_login_required
+
+# Define User Model
+User = get_user_model()
 
 ############################# Auth Views ##########################################
 
@@ -65,6 +69,41 @@ def logout_view(request):
     logout(request)
     return redirect('login')  # Redirect to login page after logout
 
+############################# Sub User Views ##########################################
+
+@custom_login_required
+@require_http_methods(["POST"])
+def add_sub_user(request):
+    user = request.user
+    sub_username = request.POST.get("sub_username", "").strip()
+
+    if not sub_username:
+        return JsonResponse({"error": "Sub-user name cannot be empty"}, status=400)
+
+    if user.parent:
+        return JsonResponse({"error": "Sub-users cannot create sub-users"}, status=403)
+
+    if User.objects.filter(parent=user).count() >= 2:
+        return JsonResponse({"error": "You can only add up to 2 sub-users."}, status=400)
+
+    if User.objects.filter(username=sub_username).exists():
+        return JsonResponse({"error": "Sub-user with this name already exists"}, status=400)
+    sub_user = User.objects.create(username=sub_username, parent=user, password=user.password)
+    return JsonResponse({"success": f"Sub-User {sub_user.username} added successfully.", "sub_user": {"id": sub_user.id, "username": sub_user.username}})
+
+@custom_login_required
+@require_http_methods(["DELETE"])
+def delete_sub_user(request, sub_user_id):
+    user = request.user
+    if user.parent:
+        return JsonResponse({'error': 'You cannot delete sub-users.'}, status=403)
+    try:
+        sub_user = User.objects.get(id=sub_user_id, parent=user)
+        sub_user.delete()
+        return JsonResponse({"message": f"Sub-User {sub_user.username} deleted successfully."})
+    except User.DoesNotExist:
+        return JsonResponse({"error": f"Sub-User {sub_user_id} not found."}, status=404)
+
 
 ############################# App Views ##########################################
 
@@ -79,7 +118,48 @@ def under_construction_view(request):
 def calendar_view(request):
     return render(request, 'calendar.html', {'user': request.user})
 
+@custom_login_required
+def user_profile_view(request):
+    # Get the logged-in user and their sub-users
+    user = request.user
+    sub_users = User.objects.filter(parent=user)
+
+    return render(request, 'user_profile.html', {
+        'user': user,
+        'sub_users': sub_users,
+    })
+
 ############################# Data ##########################################
+
+@custom_login_required
+def user_profile_data(request):
+    try:
+        # Get the logged-in user
+        user = request.user
+
+        # Get sub-users of the current user
+        sub_users_sql = User.objects.filter(parent=user)
+        sub_users_list = list(sub_users_sql.values('id', 'username'))  # Optimized
+
+        # Get parent user data if it exists
+        user_parent = (
+            {"id": user.parent.id, "username": user.parent.username} if user.parent else None
+        )
+
+        # Construct response data
+        data = {
+            "id": user.id,
+            "username": user.username,
+            "parent": user_parent,
+            "sub_users": sub_users_list,
+        }
+
+        return JsonResponse(data, status=200)
+
+    except Exception as e:
+        # Return error response in case of an exception
+        return JsonResponse({"error": "An error occurred while fetching profile data."}, status=500)
+
 
 @custom_login_required
 def get_matches(request):
@@ -87,13 +167,15 @@ def get_matches(request):
     end_date = request.GET.get('end_date')
 
     try:
-        start_date = datetime.strptime(start_date, '%Y-%m-%dT%H:%M:%S')
-        end_date = datetime.strptime(end_date, '%Y-%m-%dT%H:%M:%S')
+        if (start_date or end_date) is not None:
+            start_date = datetime.strptime(start_date, '%Y-%m-%dT%H:%M:%S')
+            end_date = datetime.strptime(end_date, '%Y-%m-%dT%H:%M:%S')
 
-        # Set minutes, seconds, and microseconds to zero
-        start_date = start_date.replace(minute=0, second=0, microsecond=0)
-        end_date = end_date.replace(minute=0, second=0, microsecond=0)
-
+            # Set minutes, seconds, and microseconds to zero
+            start_date = start_date.replace(minute=0, second=0, microsecond=0)
+            end_date = end_date.replace(minute=0, second=0, microsecond=0)
+        else:
+            return JsonResponse({'error': 'Missing start or end date'}, status=400)
     except ValueError:
         return JsonResponse({'error': 'Invalid date format'}, status=400)
 

@@ -1,0 +1,71 @@
+<!-- user_profile.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="d-flex flex-column align-items-center justify-content-center" style="height: 100%">
+        <h1>User Profile</h1>
+
+        <div class="row d-flex justify-content-center mb-2" style="width: 100%">
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card" style="position:relative;">
+                    <div class="card-body p-2" style="position:relative;">
+                        <p class="m-0"><strong>username: </strong> <span id="username">{{ user.username }}</span> </p>
+                        <!-- Parent Details -->
+                        {% if user.parent %}
+                            <div id="parent-section" style="display: block;">
+                                <p><strong>Parent:</strong> <span id="parent">{{ user.parent.username }}</span></p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row d-flex justify-content-center mb-2" style="width: 100%">
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card" style="position:relative;">
+                    <div class="card-body p-2" style="position:relative;">
+
+                        {% if user.parent %}
+                            <p class="text-danger">You are a sub-user and cannot manage other users.</p>
+                        {% else %}
+
+                            <!-- Sub-Users Section -->
+                            <h4>Sub-Users</h4>
+                            <div id="sub-users-section">
+                                <table id="sub-users-table" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Username</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+
+                            <!-- Add Sub-User Form -->
+                            <div id="add-sub-user-section" style="display: none;">
+                                <form id="add-sub-user-form">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                      <label for="sub_username" class="form-label">Sub-User Name</label>
+                                      <input type="text" class="form-control" id="sub_username" placeholder="sub_user_name" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-dark">Add Sub-User</button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script src="{% static 'js/user_profile.js' %}"></script>
+{% endblock %}

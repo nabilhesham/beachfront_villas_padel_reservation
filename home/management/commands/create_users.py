@@ -1,5 +1,4 @@
 from django.core.management.base import BaseCommand
-# from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -15,6 +14,7 @@ class Command(BaseCommand):
         ]
         admin_username = "admin"
         admin_password = "admin"
+
         for user_obj in users:
             user, created = User.objects.get_or_create(username=user_obj['username'])
             if created:
@@ -24,7 +24,6 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(f'User {user_obj["username"]} created'))
             else:
                 self.stdout.write(self.style.SUCCESS(f'User {user_obj["username"]} already exists'))
-
 
         # Create the admin user with admin privileges
         admin, created = User.objects.get_or_create(username=admin_username)
