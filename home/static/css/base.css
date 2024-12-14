@@ -76,6 +76,13 @@ html, body {
     #navbarDropdown {
         background-color: rgba(234, 236, 229, 0) !important;
     }
+    #nav-link-home {
+        background-color: rgba(234, 236, 229, 0) !important;
+    }
+}
+
+#nav-link-home {
+    background-color: rgba(234, 236, 229, .9);
 }
 
 #navbarDropdown {

@@ -89,9 +89,6 @@
             let startDate = formatDate(start_calendar);
             let endDate = formatDate(end_calendar);
 
-            console.log(`startDate: ${startDate}`)
-            console.log(`endDate: ${endDate}`)
-
             const calendarEl = document.getElementById('calendar');
             calendar = new FullCalendar.Calendar(calendarEl, {
                 timeZone: 'local',  // Ensure FullCalendar uses the local timezone
@@ -202,7 +199,6 @@
 
             // Refresh data every 1 minute
             const interval = setInterval(function() {
-                console.log('refresh')
                 calendar.refetchEvents();  // Refresh the calendar data
              }, MinutesToRefreshCalendarData * 60 * 1000);
         });

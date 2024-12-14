@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         data.sub_users.forEach(subUser => {
                             const row = document.createElement('tr');
                             row.innerHTML = `
-                                <td>${subUser.id}</td>
+<!--                                <td>${subUser.id}</td>-->
                                 <td>${subUser.username}</td>
                                 <td>
                                     <button class="btn btn-danger btn-sm delete-sub-user" data-id="${subUser.id}">

@@ -86,9 +86,10 @@ def add_sub_user(request):
     if User.objects.filter(parent=user).count() >= 2:
         return JsonResponse({"error": "You can only add up to 2 sub-users."}, status=400)
 
+    sub_username = f"{user.username}_{sub_username}"
     if User.objects.filter(username=sub_username).exists():
         return JsonResponse({"error": "Sub-user with this name already exists"}, status=400)
-    sub_user = User.objects.create(username=sub_username, parent=user, password=user.password)
+    sub_user = User.objects.create(username=sub_username, parent=user, password=user.password, default_password=False)
     return JsonResponse({"success": f"Sub-User {sub_user.username} added successfully.", "sub_user": {"id": sub_user.id, "username": sub_user.username}})
 
 @custom_login_required

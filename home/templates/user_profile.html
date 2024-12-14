@@ -7,14 +7,14 @@
         <h1>User Profile</h1>
 
         <div class="row d-flex justify-content-center mb-2" style="width: 100%">
-            <div class="col-12 col-md-6 col-lg-4">
+            <div class="col-12 col-md-8 col-lg-6">
                 <div class="card" style="position:relative;">
                     <div class="card-body p-2" style="position:relative;">
-                        <p class="m-0"><strong>username: </strong> <span id="username">{{ user.username }}</span> </p>
+                        <p class="m-0"><strong>USERNAME: </strong> <span id="username">{{ user.username }}</span> </p>
                         <!-- Parent Details -->
                         {% if user.parent %}
                             <div id="parent-section" style="display: block;">
-                                <p><strong>Parent:</strong> <span id="parent">{{ user.parent.username }}</span></p>
+                                <p><strong>PARENT:</strong> <span id="parent">{{ user.parent.username }}</span></p>
                             </div>
                         {% endif %}
                     </div>
@@ -24,7 +24,7 @@
 
 
         <div class="row d-flex justify-content-center mb-2" style="width: 100%">
-            <div class="col-12 col-md-6 col-lg-4">
+            <div class="col-12 col-md-8 col-lg-6">
                 <div class="card" style="position:relative;">
                     <div class="card-body p-2" style="position:relative;">
 
@@ -38,7 +38,7 @@
                                 <table id="sub-users-table" class="table">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
+{#                                            <th>ID</th>#}
                                             <th>Username</th>
                                             <th>Actions</th>
                                         </tr>
@@ -52,8 +52,12 @@
                                 <form id="add-sub-user-form">
                                     {% csrf_token %}
                                     <div class="mb-3">
-                                      <label for="sub_username" class="form-label">Sub-User Name</label>
-                                      <input type="text" class="form-control" id="sub_username" placeholder="sub_user_name" required>
+                                        <label for="sub_username" class="form-label">Sub-User Name</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="basic-addon3">{{ user.username }}_</span>
+                                            <input type="text" class="form-control" id="sub_username" placeholder="sub_user_name" aria-describedby="basic-addon3 basic-addon4" required>
+                                        </div>
+                                      <div class="form-text" id="basic-addon4">Sub User username will be "(username)_(sub-user-username)".</div>
                                     </div>
                                     <button type="submit" class="btn btn-dark">Add Sub-User</button>
                                 </form>
