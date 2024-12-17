@@ -18,6 +18,7 @@ import json
 # App imports
 from .models import Match, Reservation
 from .decorators import custom_login_required
+from .helper import *
 
 # Define User Model
 User = get_user_model()
@@ -208,13 +209,6 @@ def get_matches(request):
     return JsonResponse({'matches': matches})
 
 
-def validate_time_slot(date, start_time):
-    day_of_week = date.weekday()  # 0 = Monday, 6 = Sunday
-    if day_of_week in [5, 6]:  # Saturday or Sunday
-        if time(9, 0) <= start_time < time(10, 0):
-            return False
-    return True
-
 @custom_login_required
 def toggle_player_reservation(request):
     if request.method == 'POST':
@@ -252,6 +246,14 @@ def toggle_player_reservation(request):
                     reservation.player_type = player_type
                     reservation.save()
             else:
+
+                # Validate busy hour limits
+                if is_busy_hour(match_start, match_end):
+                    print(f"is_busy_hour: {is_busy_hour}")
+                    if not validate_busy_hour_limit(user, player_type):
+                        return JsonResponse({'error': 'You have reached the limit for reservations during busy hours.'},
+                                            status=400)
+
                 # Create a new reservation
                 Reservation.objects.create(user=user, match=match, player_type=player_type)
 

@@ -318,12 +318,14 @@
                 })
             })
             .then(response => response.json())
-            .then(() => {
+            .then((response) => {
+                if ('error' in response){
+                    showToast(response.error, 'danger');
+                }
                 loader.classList.add('d-none');  // Hide loader
                 modal.hide();  // Close the modal
                 calendar.refetchEvents();  // Refresh the calendar data
-            })
-            .catch(error => alert('Error updating player: ' + error))
+            }).catch(error => alert('Error updating player: ' + error))
         }
 
     </script>
