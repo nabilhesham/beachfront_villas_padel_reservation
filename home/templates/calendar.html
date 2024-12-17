@@ -107,6 +107,8 @@
                 },
                 allDaySlot: false,
                 slotDuration: '01:00:00',
+                slotMinTime: '09:00:00', // Start time for each day
+                slotMaxTime: '20:00:00', // End time for each day
                 nowIndicator: true,
                 validRange: {
                     start: start_calendar,
@@ -142,6 +144,13 @@
                 slotLabelFormat: { hour: 'numeric', minute: '2-digit', omitZeroMinute: false },
                 eventContent: function(arg) {
                     const { event } = arg;
+                    if ((event.start.getDay() === 0 || event.start.getDay() === 6) && event.start.getHours() === 9) {
+                        let cellHtml = `<div class="fc-event-custom" style="background-color: #000; pointer-events: none;">`
+                         cellHtml += `</div>`;
+                        return {
+                            html: cellHtml
+                        };
+                    }
                     const mainPlayers = event.extendedProps.mainPlayers.length;
                     const reservePlayers = event.extendedProps.reservePlayers.length;
                     let bgColor = (mainPlayers + reservePlayers) === 0 ? 'green' :
@@ -165,6 +174,7 @@
                     }else{
                         cellHtml += `<span>Main: <strong>${mainPlayers}</strong> - Reserve: <strong>${reservePlayers}</strong></span>`
                     }
+                    cellHtml += `</div>`;
 
                     return {
                         html: cellHtml
@@ -172,26 +182,31 @@
                 },
                 eventClick: function(info) {
 
-                    const matchStartTime = new Date(info.event.start); // Match's start time
-                    const currentTime = new Date(); // Current time
-                    const timeDifference = matchStartTime - currentTime; // Difference in milliseconds
+                    if ((info.event.start.getDay() === 0 || info.event.start.getDay() === 6) && info.event.start.getHours() === 9) {
+                        showToast('OFF Time!!!', 'danger');
+                    } else {
 
-                    // Time to make the match open for reservation
-                    const minutesInMillis = MinutesBeforeMatchReservationClose * 60 * 1000; // minutes in milliseconds
+                        const matchStartTime = new Date(info.event.start); // Match's start time
+                        const currentTime = new Date(); // Current time
+                        const timeDifference = matchStartTime - currentTime; // Difference in milliseconds
 
-                    // Check if the match is open for reservation before the next millis minutes
-                    const isMatchOpenForReservation = timeDifference > minutesInMillis && timeDifference >= 0;
+                        // Time to make the match open for reservation
+                        const minutesInMillis = MinutesBeforeMatchReservationClose * 60 * 1000; // minutes in milliseconds
 
-                    openMatchDetailsModal(
-                        {
-                            title: info.event.title,
-                            start: formatDate(info.event.start),
-                            end: formatDate(info.event.end),
-                            mainPlayers: info.event.extendedProps.mainPlayers,
-                            reservePlayers: info.event.extendedProps.reservePlayers,
-                            isMatchOpenForReservation: isMatchOpenForReservation,
-                        }
-                    )
+                        // Check if the match is open for reservation before the next millis minutes
+                        const isMatchOpenForReservation = timeDifference > minutesInMillis && timeDifference >= 0;
+
+                        openMatchDetailsModal(
+                            {
+                                title: info.event.title,
+                                start: formatDate(info.event.start),
+                                end: formatDate(info.event.end),
+                                mainPlayers: info.event.extendedProps.mainPlayers,
+                                reservePlayers: info.event.extendedProps.reservePlayers,
+                                isMatchOpenForReservation: isMatchOpenForReservation,
+                            }
+                        )
+                    }
                 }
             });
 
