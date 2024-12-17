@@ -2,7 +2,7 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.utils import timezone
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, time
 from django.utils.dateparse import parse_datetime
 from django.contrib.auth import authenticate, login, update_session_auth_hash,logout
 from django.contrib.auth.forms import PasswordChangeForm, AuthenticationForm
@@ -208,6 +208,12 @@ def get_matches(request):
     return JsonResponse({'matches': matches})
 
 
+def validate_time_slot(date, start_time):
+    day_of_week = date.weekday()  # 0 = Monday, 6 = Sunday
+    if day_of_week in [5, 6]:  # Saturday or Sunday
+        if time(9, 0) <= start_time < time(10, 0):
+            return False
+    return True
 
 @custom_login_required
 def toggle_player_reservation(request):
@@ -229,6 +235,9 @@ def toggle_player_reservation(request):
         except ValueError:
             return JsonResponse({'error': 'Invalid date format'}, status=400)
 
+        # Validate time slot
+        if not validate_time_slot(match_start.date(), match_start):
+            return JsonResponse({'error': 'This time slot is unavailable!'}, status=400)
 
         # Find or create the match
         match, created = Match.objects.get_or_create(start_time=match_start, end_time=match_end)
