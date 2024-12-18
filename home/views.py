@@ -200,8 +200,9 @@ def get_matches(request):
             matches.append({
                 'start_time': match.start_time.strftime('%Y-%m-%dT%H:%M:%S'),
                 'end_time': match.end_time.strftime('%Y-%m-%dT%H:%M:%S'),
-                'main_players': list(match.main_players.values_list('user__username', flat=True)),
-                'reserve_players': list(match.reserve_players.values_list('user__username', flat=True)),
+                'main_players': list(match.main_players.order_by('timestamp').values_list('user__username', flat=True)),
+                'reserve_players': list(match.reserve_players.order_by('timestamp').values_list('user__username', flat=True))
+
             })
 
         current_time = end_time
