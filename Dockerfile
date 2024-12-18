@@ -8,8 +8,8 @@ ENV PYTHONUNBUFFERED=1
 # Set the working directory
 WORKDIR /app
 
-# Install cron
-RUN apt-get update && apt-get install -y cron
+# Install system dependencies including cron and procps (for pgrep)
+RUN apt-get update && apt-get install -y cron procps
 
 # Install dependencies
 COPY requirements.txt /app/
