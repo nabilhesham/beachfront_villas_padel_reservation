@@ -7,3 +7,4 @@ sqlparse==0.5.1
 python-decouple==3.8
 dj-database-url==2.3.0
 whitenoise==6.8.2
+django-crontab==0.7.1

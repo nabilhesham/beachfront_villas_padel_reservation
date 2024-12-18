@@ -196,7 +196,6 @@ def get_matches(request):
                 'reserve_players': [],
             })
         else:
-            print(match)
             matches.append({
                 'start_time': match.start_time.strftime('%Y-%m-%dT%H:%M:%S'),
                 'end_time': match.end_time.strftime('%Y-%m-%dT%H:%M:%S'),
@@ -250,7 +249,6 @@ def toggle_player_reservation(request):
 
                 # Validate busy hour limits
                 if is_busy_hour(match_start, match_end):
-                    print(f"is_busy_hour: {is_busy_hour}")
                     if not validate_busy_hour_limit(user, player_type):
                         return JsonResponse({'error': 'You have reached the limit for reservations during busy hours.'},
                                             status=400)

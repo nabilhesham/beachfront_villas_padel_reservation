@@ -26,5 +26,10 @@ fi
 echo "Creating users..."
 python manage.py create_users
 
+# Start cron in the background
+service cron start
+python manage.py crontab add
+python manage.py crontab show
+
 # Run the default Django command (or any other command)
 exec "$@"
