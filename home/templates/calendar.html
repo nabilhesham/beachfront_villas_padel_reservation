@@ -41,13 +41,38 @@
             height: 3em;
         }
 
+        .d-block {
+            display: block !important;
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .d-none {
+            display: none !important;
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        #calendarLoader {
+            position: fixed; /* Ensure it is above other elements */
+            top: 50%; /* Center vertically */
+            left: 50%; /* Center horizontally */
+            transform: translate(-50%, -50%); /* Adjust for centering */
+            z-index: 9999; /* Ensure it is above other content */
+            background-color: rgba(255, 255, 255, 0.8); /* Optional: background overlay */
+            padding: 1rem; /* Optional: add some padding */
+            border-radius: 0.5rem; /* Optional: rounded corners */
+            display: none; /* Default hidden */
+        }
+
     </style>
 {% endblock %}
 
 {% block content %}
     <div class="card" style="position:relative; height: 100%;">
         <div class="card-body p-0" style="position:relative; height: 100%">
-            <div id="calendarLoader" class="d-none position-absolute w-100 text-center" style="top: 50%; transform: translateY(-50%);">
+{#            <div id="calendarLoader" class="d-none position-absolute w-100 text-center" style="top: 50%; transform: translateY(-50%);">#}
+            <div id="calendarLoader" class="">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
@@ -75,7 +100,10 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
+            init_calendar();
+        });
 
+        function init_calendar(){
             // Set Calendar Start & End DateTime
             let start_calendar = new Date(new Date().getTime())
             start_calendar.setHours(start_calendar.getHours());
@@ -90,6 +118,10 @@
             let endDate = formatDate(end_calendar);
 
             const calendarEl = document.getElementById('calendar');
+
+            if (calendar) {
+                calendar.destroy(); // Destroy the current calendar instance
+            }
             calendar = new FullCalendar.Calendar(calendarEl, {
                 timeZone: 'local',  // Ensure FullCalendar uses the local timezone
                 initialView: 'timeGrid',
@@ -115,11 +147,14 @@
                     end: end_calendar
                 },
                 loading: function(isLoading) {
-                    const loader = document.getElementById('calendarLoader');  // Loader element
+                    const loader = document.getElementById('calendarLoader'); // Loader element
                     if (isLoading) {
-                        loader.classList.remove('d-none');
+                        loader.classList.remove('d-none'); // Show loader
+                        loader.classList.add('d-block'); // Show loader
+                        loader.offsetHeight; // Trigger a reflow to ensure visibility
                     } else {
-                        loader.classList.add('d-none');
+                        loader.classList.add('d-none'); // Hide loader
+                         loader.classList.remove('d-block');
                     }
                 },
                 events: function(info, successCallback, failureCallback) {
@@ -216,7 +251,7 @@
             const interval = setInterval(function() {
                 calendar.refetchEvents();  // Refresh the calendar data
              }, MinutesToRefreshCalendarData * 60 * 1000);
-        });
+        }
 
         // Function to open a modal with match details
         function openMatchDetailsModal(matchData) {
@@ -301,8 +336,8 @@
 
         function togglePlayer(matchData, playerType) {
             // init loader
-            const loader = document.getElementById('modalLoader');
-            loader.classList.remove('d-none');  // Show loader
+            const modal_loader = document.getElementById('modalLoader');
+            modal_loader.classList.remove('d-none');  // Show loader
             document.getElementById('togglePlayerReservationButton').disabled = true;
 
             fetch(`/api/toggle-player-reservation/`, {
@@ -322,9 +357,9 @@
                 if ('error' in response){
                     showToast(response.error, 'danger');
                 }
-                await loader.classList.add('d-none');  // Hide loader
-                await calendar.refetchEvents();  // Refresh the calendar data
+                await modal_loader.classList.add('d-none');  // Hide loader
                 await modal.hide();  // Close the modal
+                init_calendar()
             }).catch(error => alert('Error updating player: ' + error))
         }
 
