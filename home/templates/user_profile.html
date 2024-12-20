@@ -2,6 +2,21 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block head %}
+    <style>
+        #sub-users-loader {
+            display: none; /* Default to hidden */
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+        }
+
+        #sub-users-loader.d-block {
+            display: flex; /* Show when active */
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
     <div class="d-flex flex-column align-items-center justify-content-center" style="height: 100%">
         <h1>User Profile</h1>
@@ -35,6 +50,13 @@
                             <!-- Sub-Users Section -->
                             <h4>Sub-Users</h4>
                             <div id="sub-users-section">
+                                <!-- Loading Spinner -->
+                                <div id="sub-users-loader">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                                <!-- Sub Users Table -->
                                 <table id="sub-users-table" class="table">
                                     <thead>
                                         <tr>
