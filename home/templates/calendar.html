@@ -146,6 +146,13 @@
                     start: start_calendar,
                     end: end_calendar
                 },
+                slotLabelContent: function(arg) {
+                    const startTime = arg.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const slotDurationMilliseconds = moment.duration(calendar.getOption('slotDuration')).asMilliseconds();
+                    const endTime = new Date(arg.date.getTime() + slotDurationMilliseconds);
+                    const endTimeFormatted = endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    return { html: `<span>${startTime}-${endTimeFormatted}</span>` };
+                },
                 loading: function(isLoading) {
                     const loader = document.getElementById('calendarLoader'); // Loader element
                     if (isLoading) {
