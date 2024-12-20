@@ -18,7 +18,7 @@ def get_week_start():
 def validate_time_slot(date, start_time):
     day_of_week = date.weekday()  # 0 = Monday, 6 = Sunday
     if day_of_week in [5, 6]:  # Saturday or Sunday
-        if time(9, 0) <= start_time < time(10, 0):
+        if time(9, 0) <= start_time.time() < time(10, 0):
             return False
     return True
 
