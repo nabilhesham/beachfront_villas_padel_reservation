@@ -71,6 +71,7 @@ def logout_view(request):
     return redirect('login')  # Redirect to login page after logout
 
 ############################# Sub User Views ##########################################
+allowed_sub_users_count = 4
 
 @custom_login_required
 @require_http_methods(["POST"])
@@ -84,8 +85,8 @@ def add_sub_user(request):
     if user.parent:
         return JsonResponse({"error": "Sub-users cannot create sub-users"}, status=403)
 
-    if User.objects.filter(parent=user).count() >= 2:
-        return JsonResponse({"error": "You can only add up to 2 sub-users."}, status=400)
+    if User.objects.filter(parent=user).count() >= allowed_sub_users_count:
+        return JsonResponse({"error": f"You can only add up to {allowed_sub_users_count} sub-users."}, status=400)
 
     sub_username = f"{user.username}_{sub_username}"
     if User.objects.filter(username=sub_username).exists():
@@ -129,6 +130,7 @@ def user_profile_view(request):
     return render(request, 'user_profile.html', {
         'user': user,
         'sub_users': sub_users,
+        'allowed_sub_users_count': allowed_sub_users_count
     })
 
 ############################# Data ##########################################
@@ -154,6 +156,7 @@ def user_profile_data(request):
             "username": user.username,
             "parent": user_parent,
             "sub_users": sub_users_list,
+            'allowed_sub_users_count': allowed_sub_users_count,
         }
 
         return JsonResponse(data, status=200)

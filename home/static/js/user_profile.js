@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             subUsersTable.querySelector('tbody').appendChild(row);
                         });
 
-                        // Add Delete Sub-User Handlers
+                        // Delete Sub-User Handler
                         document.querySelectorAll('.delete-sub-user').forEach(button => {
                             button.addEventListener('click', function () {
                                 deleteSubUser(this.dataset.id);
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
 
                     // Toggle Add-Sub-User Section
-                    addSubUserSection.style.display = data.sub_users.length < 2 ? 'block' : 'none';
+                    addSubUserSection.style.display = data.sub_users.length < data.allowed_sub_users_count ? 'block' : 'none';
                 }
                 toggleSpinner(false); // Hide spinner
             })
