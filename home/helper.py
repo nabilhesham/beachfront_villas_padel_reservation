@@ -1,9 +1,12 @@
 # Django imports
 from datetime import time, timedelta, datetime
+from django.contrib.auth import get_user_model
+
 
 # App imports
 from .models import Match, Reservation
 
+User = get_user_model()
 
 def get_week_start():
     """
@@ -36,21 +39,16 @@ def is_busy_hour(start_time, end_time):
 
 
 # validate match reservation
+allowed_user_busy_hour_reservations = 2
+allowed_total_busy_hour_reservations = 4
 def validate_busy_hour_limit(user, player_type):
-    # Include the user and their sub-users in the count
-    # related_users = [user] + list(user.sub_users.all())
-    related_users = []
-    if user.is_master is False:
-        user = user.parent
-    related_users.append(user)
-
     # Count reservations for the user and their sub-users for the current week.
     start_of_week = get_week_start()
     end_of_week = start_of_week + timedelta(days=7)
 
-    # Count reservations during busy hours
+    # Count reservations during busy hours for user
     busy_hour_reservations = Reservation.objects.filter(
-        user__in=related_users,
+        user=user,
         match__start_time__gte=start_of_week,
         match__start_time__lt=end_of_week,
         player_type=player_type,
@@ -58,9 +56,49 @@ def validate_busy_hour_limit(user, player_type):
         match__end_time__hour__lte=20,  # Busy hours end at 8 PM
     ).count()
 
-    # Check limits
-    if player_type == 'main' and busy_hour_reservations >= 2:
+    # Check limits of user
+    if player_type == 'main' and busy_hour_reservations >= allowed_user_busy_hour_reservations:
         return False
-    if player_type == 'reserve' and busy_hour_reservations >= 2:
+    if player_type == 'reserve' and busy_hour_reservations >= allowed_user_busy_hour_reservations:
         return False
+
+    if user.is_master is False:
+        # if user is sub count parent reservations
+        user = user.parent
+        # Count reservations during busy hours for user
+        parent_busy_hour_reservations = Reservation.objects.filter(
+            user=user,
+            match__start_time__gte=start_of_week,
+            match__start_time__lt=end_of_week,
+            player_type=player_type,
+            match__start_time__hour__gte=17,  # Busy hours start at 5 PM
+            match__end_time__hour__lte=20,  # Busy hours end at 8 PM
+        ).count()
+
+        # Check limits of user
+        if player_type == 'main' and busy_hour_reservations + parent_busy_hour_reservations >= allowed_total_busy_hour_reservations:
+            return False
+        if player_type == 'reserve' and busy_hour_reservations + parent_busy_hour_reservations >= allowed_total_busy_hour_reservations:
+            return False
+    else:
+        # if user is parent count children reservations
+        sub_users_sql = User.objects.filter(parent=user)
+        children_busy_hour_reservations = 0
+        for sub_user in sub_users_sql:
+            # Count reservations during busy hours for user
+            children_busy_hour_reservations += Reservation.objects.filter(
+                user=sub_user,
+                match__start_time__gte=start_of_week,
+                match__start_time__lt=end_of_week,
+                player_type=player_type,
+                match__start_time__hour__gte=17,  # Busy hours start at 5 PM
+                match__end_time__hour__lte=20,  # Busy hours end at 8 PM
+            ).count()
+
+        # Check limits of user
+        if player_type == 'main' and busy_hour_reservations + children_busy_hour_reservations >= allowed_total_busy_hour_reservations:
+            return False
+        if player_type == 'reserve' and busy_hour_reservations + children_busy_hour_reservations >= allowed_total_busy_hour_reservations:
+            return False
+
     return True
