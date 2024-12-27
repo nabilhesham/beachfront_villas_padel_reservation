@@ -20,7 +20,7 @@ html, body {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(234, 236, 229, 0.1); /* Gray overlay */
+    background-color: rgba(234, 236, 229, 0.3); /* Gray overlay */
     backdrop-filter: blur(5px); /* Blur effect */
     z-index: 1;
 }
@@ -33,9 +33,10 @@ html, body {
 }
 
 #base-container {
-    display: flex;
-    justify-content: center;
-    align-content: center;
+    display: block;
+    /*display: flex;*/
+    /*justify-content: center;*/
+    /*align-content: center;*/
     height: 90%;
     top: 10%;
     position: relative;

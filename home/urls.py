@@ -17,6 +17,7 @@ urlpatterns = [
     path('under-construction/', views.under_construction_view, name='under-construction'),
     path('calendar/', views.calendar_view, name='calendar'),
     path('user-profile/', views.user_profile_view, name='user-profile'),
+    path('rules/', views.rules_view, name='rules'),
 
     # Data URLs
     path('api/user-profile/', views.user_profile_data, name='user-profile-data'),

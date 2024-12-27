@@ -133,6 +133,10 @@ def user_profile_view(request):
         'allowed_sub_users_count': allowed_sub_users_count
     })
 
+@custom_login_required
+def rules_view(request):
+    return render(request, 'rules.html', {'user': request.user})
+
 ############################# Data ##########################################
 
 @custom_login_required

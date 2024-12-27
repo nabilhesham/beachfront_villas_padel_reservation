@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block sub-title %}Calendar{% endblock %}
+
 {% block head %}
     <link rel="stylesheet" href="{% static 'css/calendar.css' %}">
 {% endblock %}
@@ -149,7 +151,7 @@
                     // construct html content for the cell
                     let cellHtml = `<div class="fc-event-custom" style="background-color: ${bgColor};">`
                     if (isMatchPlayingNow === true){
-                        cellHtml += `<span>Playing Now</span>`
+                        cellHtml += `<span style="font-size: 12pt; font-weight: 700;">Playing Now</span>`
                     }else{
                         cellHtml += `<span>Main: <strong>${mainPlayers}</strong> - Reserve: <strong>${reservePlayers}</strong></span>`
                     }
