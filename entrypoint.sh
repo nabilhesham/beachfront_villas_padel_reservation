@@ -23,7 +23,15 @@ echo "Creating users..."
 python manage.py create_users
 
 # Start cron in the background
-cron
+service cron start
+# Ensure cron service is running
+if ! pgrep cron > /dev/null; then
+    echo "Starting cron service..."
+    service cron start
+else
+    echo "Cron is already running"
+fi
+
 
 # Run the default Django command (or any other command, e.g., start server)
 echo "Starting the Django server..."
