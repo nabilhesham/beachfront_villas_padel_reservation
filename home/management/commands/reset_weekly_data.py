@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 from datetime import datetime, timedelta
 
 # App Imports
-from home.models.match import Match, Reservation
+from home.models import Match, Reservation
 
 class Command(BaseCommand):
     help = 'Reset all matches and reservations at the start of each week'
