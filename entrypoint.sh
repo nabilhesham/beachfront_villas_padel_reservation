@@ -11,6 +11,7 @@ echo "DATABASE_URL is set to: $DATABASE_URL"
 echo "Stopping existing cron processes..."
 pkill -f cron || true
 
+
 # Ensure the environment is correctly configured
 echo "Initializing Django environment..."
 export DJANGO_SETTINGS_MODULE=beachfront_villas_padel_reservation.settings
@@ -117,7 +118,7 @@ fi
 
 # Setup cron jobs
 echo "Setting up crontab..."
-(echo "* * * * * export DJANGO_ENV=$DJANGO_ENV && export DATABASE_URL=$DATABASE_URL && /usr/local/bin/python /app/manage.py reset_weekly_data >> /proc/1/fd/1 2>/proc/1/fd/2") | crontab -u root -
+(echo "0 0 * * 1 export DJANGO_ENV=$DJANGO_ENV && export DATABASE_URL=$DATABASE_URL && /usr/local/bin/python /app/manage.py reset_weekly_data >> /proc/1/fd/1 2>/proc/1/fd/2") | crontab -u root -
 
 # Restart cron service
 echo "Restarting cron service..."
