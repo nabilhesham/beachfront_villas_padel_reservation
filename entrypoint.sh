@@ -102,25 +102,43 @@ fi
 echo "Creating users..."
 python manage.py create_users
 
-# Set up the crontab
-echo "Setting up crontab..."
-crontab /etc/cron.d/cron_jobs
-chmod 0644 /etc/cron.d/cron_jobs
+## Set up the crontab
+#echo "Setting up crontab..."
+#crontab /etc/cron.d/cron_jobs
+#chmod 0644 /etc/cron.d/cron_jobs
+#
+## Start the cron service
+#echo "Starting cron service..."
+#cron
+#
+## Check if the cron service is running
+#echo "Checking if cron is running..."
+#CRON_PID=$(pgrep cron || true)
+#
+#if [ -z "$CRON_PID" ]; then
+#    echo "Error: Cron service failed to start!"
+#    exit 1
+#else
+#    echo "Cron service is running with PID: $CRON_PID"
+#fi
 
-# Start the cron service
-echo "Starting cron service..."
-cron
-
-# Check if the cron service is running
+# Check if cron is already running
 echo "Checking if cron is running..."
-CRON_PID=$(pgrep cron || true)
-
-if [ -z "$CRON_PID" ]; then
-    echo "Error: Cron service failed to start!"
-    exit 1
+if ! pgrep cron > /dev/null
+then
+    echo "Starting cron service..."
+    service cron start
 else
-    echo "Cron service is running with PID: $CRON_PID"
+    echo "Cron service is already running."
 fi
+
+# Setup cron jobs
+echo "Setting up crontab..."
+(crontab -l ; echo "* * * * * export DJANGO_ENV=$DJANGO_ENV && /usr/local/bin/python /app/manage.py reset_weekly_data >> /proc/1/fd/1 2>/proc/1/fd/2") | crontab -
+
+# Start cron service (if not already started)
+echo "Starting cron service..."
+service cron restart
 
 # Run the default Django command (or any other command, e.g., start server)
 echo "Starting the Django server..."
