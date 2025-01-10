@@ -22,8 +22,9 @@ fi
 
 # Wait for the database to be ready if using external DB
 if [ "$DB_TYPE" = "external" ]; then
-  echo "Waiting for database at $DB_URL to be ready..."
-  python - <<EOF
+# Wait for PostgreSQL to be ready (make sure the PostgreSQL component is running first)
+echo "Waiting for database to be ready..."
+python - <<EOF
 import psycopg2
 import time
 import os
@@ -32,6 +33,7 @@ DB_URL = os.getenv("DATABASE_URL")
 
 while True:
     try:
+        # Ensure we're passing the full DATABASE_URL to psycopg2
         conn = psycopg2.connect(DB_URL)
         conn.close()
         print("Database is ready!")
@@ -79,7 +81,7 @@ EOF
 
 # Apply database migrations
 echo "Applying database migrations..."
-python manage.py migrate
+python manage.py migrate --noinput
 
 # Check if DJANGO_ENV is set to "production"
 if [ "$DJANGO_ENV" = "production" ]; then

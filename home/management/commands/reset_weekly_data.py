@@ -15,8 +15,8 @@ class Command(BaseCommand):
 
             # Check database connection
             with connection.cursor() as cursor:
-                cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-                tables = cursor.fetchall()
+                tables = connection.introspection.table_names()
+                print(f"Database tables: {tables}")
                 self.stdout.write(self.style.SUCCESS(f"Available tables: {tables}"))
 
 
