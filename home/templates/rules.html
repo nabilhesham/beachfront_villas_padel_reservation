@@ -15,27 +15,33 @@
                 <div class="card" style="position:relative; min-height: fit-content; max-height: 70vh;overflow: auto;">
                     <div class="card-body p-2" style="position:relative;">
                         <ul>
+                            <li>The available slots per week (saturday and sunday No playing from 9:00-10:00AM, that’s why they are in black).</li>
+                            <li>Each slot represent a one-hour match.</li>
+                            <li>Users can only reserve 48h in advance.</li>
+                            <li>Busy hour's slots are the last 3 slots each day.</li>
+                            <li>Each user has quota for 4 sub users that can be created by the user.</li>
                             <li>
-                                The available slots per week (saturday and sunday No playing from 9:00-10:00AM, that’s why they are in black).
+                                Each user has quota for only 2 playing times per week during busy hours,
+                                however can play during non-busy hours or be reserve for both busy hours & non-busy slots without limitation.
                             </li>
                             <li>
-                                users can only reserve 48h in advance.
+                                Total user & sub users has quota for only 4 playing times per week during busy hours,
+                                however can play during non-busy hours or be reserve for both busy hours & non-busy slots without limitation.
+                            </li>
+                            <li>Each match could have 4 main players and 4 reserve players based on users quota as mentioned above.</li>
+                            <li>Each user can only add/remove/switch slot for him/herself (No user or sub user should be able to allowed to modify for other users).</li>
+                            <li>
+                                Match should close 4 hours before its playing time in case there are completed players which mean no changes are allowed,
+                                however match will keep open if there are less than 4 main players.
                             </li>
                             <li>
-                                Busy hour's slots are the last 3 slots each day.
+                                If a player reserved him/her self in the match as a main player,
+                                and any related sub user to this user can't add him/her self in the match as a reserve player but only as main player.
                             </li>
-                            <li>
-                                Each user has quota for only 2 playing times per week during busy hours, however can play during non-busy hours or be reserve for both busy hours & non-busy slots without limitation.
-                            </li>
-                            <li>
-                                Total user & sub users has quota for only 4 playing times per week during busy hours, however can play during non-busy hours or be reserve for both busy hours & non-busy slots without limitation.
-                            </li>
-                            <li>
-                                Each match could have 4 main players and 4 reserve players based on users quota as mentioned above, each user can only select/unselect slot for him/herself (No user or sub user should be able to allowed to modify for other users).
-                            </li>
-                            <li>
-                                Match should close 30 minutes before its playing time in case there are completed players which mean no changes are allowed, however match keep open if there are no completed 4 main players.
-                            </li>
+                            <li>Green slot means that there is available place in the main players in this match</li>
+                            <li>Yellow slot means that there is available in the reserve players and no available place in the main players in this match</li>
+                            <li>Red slot means that there isn't available reservation in this match</li>
+                            <li>Black slot means there isn't any match in this period</li>
                         </ul>
                     </div>
                 </div>
