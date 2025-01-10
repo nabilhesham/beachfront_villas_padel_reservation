@@ -1,11 +1,17 @@
 #!/bin/bash
+set -e  # Exit immediately if a command exits with a non-zero status
 
-# Exit on errors
-set -e
+# Kill any existing cron processes (if present)
+echo "Stopping existing cron processes..."
+pkill -f cron || true
 
-# Run migrations
-echo "Running migrations..."
-python manage.py migrate --noinput
+# Ensure the environment is correctly configured
+echo "Initializing Django environment..."
+export DJANGO_SETTINGS_MODULE=beachfront_villas_padel_reservation.settings
+
+# Apply database migrations
+echo "Applying database migrations..."
+python manage.py migrate
 
 # Check if DJANGO_ENV is set to "production"
 if [ "$DJANGO_ENV" = "production" ]; then
@@ -22,16 +28,25 @@ fi
 echo "Creating users..."
 python manage.py create_users
 
-# Start cron in the background
-service cron start
-# Ensure cron service is running
-if ! pgrep cron > /dev/null; then
-    echo "Starting cron service..."
-    service cron start
-else
-    echo "Cron is already running"
-fi
+# Set up the crontab
+echo "Setting up crontab..."
+crontab /etc/cron.d/cron_jobs
+chmod 0644 /etc/cron.d/cron_jobs
 
+# Start the cron service
+echo "Starting cron service..."
+cron
+
+# Check if the cron service is running
+echo "Checking if cron is running..."
+CRON_PID=$(pgrep cron || true)
+
+if [ -z "$CRON_PID" ]; then
+    echo "Error: Cron service failed to start!"
+    exit 1
+else
+    echo "Cron service is running with PID: $CRON_PID"
+fi
 
 # Run the default Django command (or any other command, e.g., start server)
 echo "Starting the Django server..."
