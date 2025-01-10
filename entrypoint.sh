@@ -17,36 +17,22 @@ if [ -z "$DATABASE_URL" ]; then
 else
   echo "Using production database from DATABASE_URL."
   DB_TYPE="external"
-  DB_HOST=$(python -c "import os, dj_database_url; print(dj_database_url.parse(os.getenv('DATABASE_URL')).get('HOST', ''))")
-  DB_PORT=$(python -c "import os, dj_database_url; print(dj_database_url.parse(os.getenv('DATABASE_URL')).get('PORT', ''))")
-  DB_NAME=$(python -c "import os, dj_database_url; print(dj_database_url.parse(os.getenv('DATABASE_URL')).get('NAME', ''))")
-  DB_USER=$(python -c "import os, dj_database_url; print(dj_database_url.parse(os.getenv('DATABASE_URL')).get('USER', ''))")
-  DB_PASSWORD=$(python -c "import os, dj_database_url; print(dj_database_url.parse(os.getenv('DATABASE_URL')).get('PASSWORD', ''))")
+  DB_URL=$DATABASE_URL  # Directly use the DATABASE_URL
 fi
 
 # Wait for the database to be ready if using external DB
 if [ "$DB_TYPE" = "external" ]; then
-  echo "Waiting for database at $DB_HOST:$DB_PORT to be ready..."
+  echo "Waiting for database at $DB_URL to be ready..."
   python - <<EOF
 import psycopg2
 import time
 import os
 
-DB_HOST = os.getenv("DB_HOST")
-DB_PORT = os.getenv("DB_PORT")
-DB_NAME = os.getenv("DB_NAME")
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_URL = os.getenv("DATABASE_URL")
 
 while True:
     try:
-        conn = psycopg2.connect(
-            host=DB_HOST,
-            port=DB_PORT,
-            dbname=DB_NAME,
-            user=DB_USER,
-            password=DB_PASSWORD
-        )
+        conn = psycopg2.connect(DB_URL)
         conn.close()
         print("Database is ready!")
         break
