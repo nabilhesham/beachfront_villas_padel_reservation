@@ -127,6 +127,7 @@ echo "Checking if cron is running..."
 if ! pgrep cron > /dev/null
 then
     echo "Starting cron service..."
+    service cron stop
     service cron start
 else
     echo "Cron service is already running."
@@ -134,11 +135,18 @@ fi
 
 # Setup cron jobs
 echo "Setting up crontab..."
-(crontab -l ; echo "* * * * * export DJANGO_ENV=$DJANGO_ENV && /usr/local/bin/python /app/manage.py reset_weekly_data >> /proc/1/fd/1 2>/proc/1/fd/2") | crontab -
+(echo "* * * * * export DJANGO_ENV=$DJANGO_ENV && /usr/local/bin/python /app/manage.py reset_weekly_data >> /proc/1/fd/1 2>/proc/1/fd/2") | crontab -u root -
 
-# Start cron service (if not already started)
-echo "Starting cron service..."
+# Restart cron service
+echo "Restarting cron service..."
 service cron restart
+
+sleep 2
+# Debugging step: list the cron jobs after setting them
+echo "Listing current crontab..."
+crontab -l
+
+service cron status
 
 # Run the default Django command (or any other command, e.g., start server)
 echo "Starting the Django server..."
