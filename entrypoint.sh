@@ -4,6 +4,8 @@ set -e  # Exit immediately if a command exits with a non-zero status
 # Check if DJANGO_ENV is set, if not default to 'local'
 DJANGO_ENV=${DJANGO_ENV:-local}
 echo "DJANGO_ENV is set to: $DJANGO_ENV"
+DATABASE_URL=${DATABASE_URL:-}
+echo "DATABASE_URL is set to: $DATABASE_URL"
 
 # Kill any existing cron processes (if present)
 echo "Stopping existing cron processes..."
@@ -102,26 +104,6 @@ fi
 echo "Creating users..."
 python manage.py create_users
 
-## Set up the crontab
-#echo "Setting up crontab..."
-#crontab /etc/cron.d/cron_jobs
-#chmod 0644 /etc/cron.d/cron_jobs
-#
-## Start the cron service
-#echo "Starting cron service..."
-#cron
-#
-## Check if the cron service is running
-#echo "Checking if cron is running..."
-#CRON_PID=$(pgrep cron || true)
-#
-#if [ -z "$CRON_PID" ]; then
-#    echo "Error: Cron service failed to start!"
-#    exit 1
-#else
-#    echo "Cron service is running with PID: $CRON_PID"
-#fi
-
 # Check if cron is already running
 echo "Checking if cron is running..."
 if ! pgrep cron > /dev/null
@@ -135,7 +117,7 @@ fi
 
 # Setup cron jobs
 echo "Setting up crontab..."
-(echo "* * * * * export DJANGO_ENV=$DJANGO_ENV && /usr/local/bin/python /app/manage.py reset_weekly_data >> /proc/1/fd/1 2>/proc/1/fd/2") | crontab -u root -
+(echo "* * * * * export DJANGO_ENV=$DJANGO_ENV && export DATABASE_URL=$DATABASE_URL && /usr/local/bin/python /app/manage.py reset_weekly_data >> /proc/1/fd/1 2>/proc/1/fd/2") | crontab -u root -
 
 # Restart cron service
 echo "Restarting cron service..."

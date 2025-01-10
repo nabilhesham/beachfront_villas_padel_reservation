@@ -5,6 +5,7 @@ FROM python:3.11.10-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV DJANGO_ENV=${DJANGO_ENV:-local}
+ENV DATABASE_URL=${DATABASE_URL:-}
 
 # Set the working directory
 WORKDIR /app
@@ -18,15 +19,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy project files
 COPY . /app/
-
-## Copy cron job file
-#COPY cronjobs /etc/cron.d/cron_jobs
-#
-## Give execution rights on the cron job file
-#RUN chmod 0644 /etc/cron.d/cron_jobs
-#
-## Register the cron job
-#RUN crontab /etc/cron.d/cron_jobs
 
 # Add the entrypoint script
 COPY entrypoint.sh /app/entrypoint.sh

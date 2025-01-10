@@ -53,7 +53,6 @@ class Command(BaseCommand):
             # Check database connection
             with connection.cursor() as cursor:
                 tables = connection.introspection.table_names()
-                print(f"Database tables: {tables}")
                 self.stdout.write(self.style.SUCCESS(f"Available tables: {tables}"))
 
 
