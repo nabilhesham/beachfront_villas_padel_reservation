@@ -11,13 +11,13 @@ import django
 # App Imports
 from home.models import Match, Reservation
 
-# Ensure Django settings are loaded
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "beachfront_villas_padel_reservation.settings")
-django.setup()
-
 # Check the DJANGO_ENV variable
 django_env = os.getenv('DJANGO_ENV', 'local')  # Default to 'local' if not set
 print(f"Using environment: {django_env}")  # Debugging line
+
+# Ensure Django settings are loaded
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "beachfront_villas_padel_reservation.settings")
+django.setup()
 
 class Command(BaseCommand):
     help = 'Reset all matches and reservations at the start of each week'

@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e  # Exit immediately if a command exits with a non-zero status
 
+# Check if DJANGO_ENV is set, if not default to 'local'
+DJANGO_ENV=${DJANGO_ENV:-local}
+echo "DJANGO_ENV is set to: $DJANGO_ENV"
+
 # Kill any existing cron processes (if present)
 echo "Stopping existing cron processes..."
 pkill -f cron || true
@@ -97,11 +101,6 @@ fi
 # Run the create_users command to ensure users are created
 echo "Creating users..."
 python manage.py create_users
-
-# Export the DJANGO_ENV to ensure it's available for cron
-export DJANGO_ENV=$DJANGO_ENV
-# Check if the DJANGO_ENV variable is set correctly
-echo "DJANGO_ENV is set to: $DJANGO_ENV"
 
 # Set up the crontab
 echo "Setting up crontab..."
