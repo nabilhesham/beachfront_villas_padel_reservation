@@ -9,6 +9,61 @@ pkill -f cron || true
 echo "Initializing Django environment..."
 export DJANGO_SETTINGS_MODULE=beachfront_villas_padel_reservation.settings
 
+# Determine the database configuration
+if [ -z "$DATABASE_URL" ]; then
+  echo "Using local SQLite database for development."
+  DB_TYPE="sqlite"
+  DB_PATH=${DB_PATH:-/app/db.sqlite3}  # Default path to SQLite file
+else
+  echo "Using production database from DATABASE_URL."
+  DB_TYPE="external"
+  DB_HOST=$(python -c "import os, dj_database_url; print(dj_database_url.parse(os.getenv('DATABASE_URL')).get('HOST', ''))")
+  DB_PORT=$(python -c "import os, dj_database_url; print(dj_database_url.parse(os.getenv('DATABASE_URL')).get('PORT', ''))")
+fi
+
+# Wait for the database to be ready if using external DB
+if [ "$DB_TYPE" = "external" ]; then
+  echo "Waiting for database at $DB_HOST:$DB_PORT to be ready..."
+  while ! nc -z $DB_HOST $DB_PORT; do
+    sleep 1
+  done
+  echo "Database is ready!"
+fi
+
+# Print database tables
+echo "Fetching database table names..."
+python - <<EOF
+import os
+from django.conf import settings
+from django.db import connection
+
+if "$DB_TYPE" == "sqlite":
+    settings.configure(
+        DEBUG=True,
+        DATABASES={
+            "default": {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": os.getenv("DB_PATH", "/app/db.sqlite3"),
+            }
+        }
+    )
+else:
+    import dj_database_url
+    settings.configure(
+        DEBUG=True,
+        DATABASES={"default": dj_database_url.parse(os.getenv("DATABASE_URL"))}
+    )
+
+# Initialize Django
+import django
+django.setup()
+
+# Print table names
+with connection.cursor() as cursor:
+    tables = connection.introspection.table_names()
+    print(f"Database tables: {tables}")
+EOF
+
 # Apply database migrations
 echo "Applying database migrations..."
 python manage.py migrate

@@ -1,6 +1,7 @@
 # Django Imports
 from django.core.management.base import BaseCommand
 from datetime import datetime, timedelta
+from django.db import connection
 
 # App Imports
 from home.models import Match, Reservation
@@ -11,6 +12,14 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         try:
             self.stdout.write(self.style.SUCCESS(f'Running Reset Weekly Data'))
+
+            # Check database connection
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+                tables = cursor.fetchall()
+                self.stdout.write(self.style.SUCCESS(f"Available tables: {tables}"))
+
+
             today = datetime.now().date()
             self.stdout.write(self.style.SUCCESS(f'today: {today}'))
             last_monday = today - timedelta(days=today.weekday())  # Get last Monday

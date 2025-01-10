@@ -1,1 +1,1 @@
-*/10 * * * * DJANGO_SETTINGS_MODULE=beachfront_villas_padel_reservation.settings /usr/local/bin/python /app/manage.py reset_weekly_data >> /proc/1/fd/1 2>/proc/1/fd/2
+* * * * * DJANGO_SETTINGS_MODULE=beachfront_villas_padel_reservation.settings /usr/local/bin/python /app/manage.py reset_weekly_data >> /proc/1/fd/1 2>/proc/1/fd/2
