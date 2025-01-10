@@ -98,6 +98,11 @@ fi
 echo "Creating users..."
 python manage.py create_users
 
+# Export the DJANGO_ENV to ensure it's available for cron
+export DJANGO_ENV=$DJANGO_ENV
+# Check if the DJANGO_ENV variable is set correctly
+echo "DJANGO_ENV is set to: $DJANGO_ENV"
+
 # Set up the crontab
 echo "Setting up crontab..."
 crontab /etc/cron.d/cron_jobs
