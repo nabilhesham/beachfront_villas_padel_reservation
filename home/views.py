@@ -250,12 +250,29 @@ def toggle_player_reservation(request):
                 if reservation.player_type == player_type:
                     reservation.delete()  # Remove reservation
                 else:
+
+                    # Validate busy hour limits
+                    if is_busy_hour(match_start, match_end):
+                        if player_type == "reserve" and not validate_reserve_reservation(match, user):
+                            return JsonResponse({'error': 'Related Players are main players in the same match'},
+                                                status=400)
+
+                        if not validate_busy_hour_limit(user, player_type):
+                            return JsonResponse(
+                                {'error': 'You have reached the limit for reservations during busy hours.'},
+                                status=400)
+
+                    # toggle existed reservation
                     reservation.player_type = player_type
                     reservation.save()
             else:
 
                 # Validate busy hour limits
                 if is_busy_hour(match_start, match_end):
+                    if player_type == "reserve" and not validate_reserve_reservation(match, user):
+                        return JsonResponse({'error': 'Related Players are main players in the same match'},
+                                            status=400)
+
                     if not validate_busy_hour_limit(user, player_type):
                         return JsonResponse({'error': 'You have reached the limit for reservations during busy hours.'},
                                             status=400)

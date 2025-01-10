@@ -38,6 +38,33 @@ def is_busy_hour(start_time, end_time):
     return start_time_only >= busy_start and end_time_only <= busy_end
 
 
+# validate if related players are main players in the same match
+def validate_reserve_reservation(match, user):
+    validated = True
+
+    # get list of related users
+    user_list = []
+    if user.is_master is True:
+        sub_users_sql = User.objects.filter(parent=user)
+        for sub_user in sub_users_sql:
+            user_list.append(sub_user)
+    else:
+        user_list.append(user.parent)
+
+    # main players reservations for the match
+    match_main_reservations = Reservation.objects.filter(
+        match=match,
+        user__in=user_list,
+        player_type="main"
+    )
+
+    # check if any related player is main player in the match
+    if len(match_main_reservations) > 0:
+        validated = False
+
+    return validated
+
+
 # validate match reservation
 allowed_user_busy_hour_reservations = 2
 allowed_total_busy_hour_reservations = 4
