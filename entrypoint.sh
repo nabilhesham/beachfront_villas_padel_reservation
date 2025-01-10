@@ -19,15 +19,41 @@ else
   DB_TYPE="external"
   DB_HOST=$(python -c "import os, dj_database_url; print(dj_database_url.parse(os.getenv('DATABASE_URL')).get('HOST', ''))")
   DB_PORT=$(python -c "import os, dj_database_url; print(dj_database_url.parse(os.getenv('DATABASE_URL')).get('PORT', ''))")
+  DB_NAME=$(python -c "import os, dj_database_url; print(dj_database_url.parse(os.getenv('DATABASE_URL')).get('NAME', ''))")
+  DB_USER=$(python -c "import os, dj_database_url; print(dj_database_url.parse(os.getenv('DATABASE_URL')).get('USER', ''))")
+  DB_PASSWORD=$(python -c "import os, dj_database_url; print(dj_database_url.parse(os.getenv('DATABASE_URL')).get('PASSWORD', ''))")
 fi
 
 # Wait for the database to be ready if using external DB
 if [ "$DB_TYPE" = "external" ]; then
   echo "Waiting for database at $DB_HOST:$DB_PORT to be ready..."
-  while ! nc -z $DB_HOST $DB_PORT; do
-    sleep 1
-  done
-  echo "Database is ready!"
+  python - <<EOF
+import psycopg2
+import time
+import os
+
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+
+while True:
+    try:
+        conn = psycopg2.connect(
+            host=DB_HOST,
+            port=DB_PORT,
+            dbname=DB_NAME,
+            user=DB_USER,
+            password=DB_PASSWORD
+        )
+        conn.close()
+        print("Database is ready!")
+        break
+    except psycopg2.OperationalError as e:
+        print(f"Database is not ready yet: {e}")
+        time.sleep(1)
+EOF
 fi
 
 # Print database tables
@@ -63,6 +89,7 @@ with connection.cursor() as cursor:
     tables = connection.introspection.table_names()
     print(f"Database tables: {tables}")
 EOF
+
 
 # Apply database migrations
 echo "Applying database migrations..."
