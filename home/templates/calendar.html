@@ -26,6 +26,7 @@
         // Global Vars
         let modal;
         let calendar;
+        const user = '{{ user }}'
 
         // Convert to local datetime and format as 'YYYY-MM-DDTHH:mm:ss' without timezone
         function formatDate(date) {
@@ -132,11 +133,14 @@
                             html: cellHtml
                         };
                     }
-                    const mainPlayers = event.extendedProps.mainPlayers.length;
-                    const reservePlayers = event.extendedProps.reservePlayers.length;
-                    let bgColor = (mainPlayers + reservePlayers) === 0 ? 'green' :
-                                  (mainPlayers + reservePlayers) <= 4 ? 'green' :
-                                  (mainPlayers + reservePlayers) <= 8 ? 'yellow' : 'red';
+                    const mainPlayers = event.extendedProps.mainPlayers;
+                    const reservePlayers = event.extendedProps.reservePlayers;
+                    let bgColor = 'red'
+                    if (mainPlayers.length < 4) {
+                        bgColor = 'green'
+                    }else if(mainPlayers.length === 4 && reservePlayers.length < 4){
+                        bgColor = 'yellow'
+                    }
 
                     const matchStartTime = new Date(event.start); // Match's start time
                     const currentTime = new Date(); // Current time
@@ -150,10 +154,18 @@
 
                     // construct html content for the cell
                     let cellHtml = `<div class="fc-event-custom" style="background-color: ${bgColor};">`
+
+                    // check if user registered in the match
+                    cellHtml += `<span style="width: 10%">`
+                    if (mainPlayers.includes(user) || reservePlayers.includes(user)){
+                        cellHtml += `<i class="fa-solid fa-table-tennis-paddle-ball"></i>`
+                    }
+                    cellHtml += `</span>`
+
                     if (isMatchPlayingNow === true){
-                        cellHtml += `<span style="font-size: 12pt; font-weight: 700;">Playing Now</span>`
+                        cellHtml += `<span style="width: 90%; font-size: 12pt; font-weight: 700;">Playing Now</span>`
                     }else{
-                        cellHtml += `<span>Main: <strong>${mainPlayers}</strong> - Reserve: <strong>${reservePlayers}</strong></span>`
+                        cellHtml += `<span style="width: 90%;">Main: <strong>${mainPlayers.length}</strong> - Reserve: <strong>${reservePlayers.length}</strong></span>`
                     }
                     cellHtml += `</div>`;
 
