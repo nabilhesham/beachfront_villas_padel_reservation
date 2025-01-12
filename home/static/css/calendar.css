@@ -1,10 +1,19 @@
-.fc-green { background-color: #8fdf82 !important; }
-.fc-yellow { background-color: yellow !important; }
-.fc-red { background-color: red !important; }
+.fc-green {
+    background-color: #8fdf82 !important;
+}
+
+.fc-yellow {
+    background-color: yellow !important;
+}
+
+.fc-red {
+    background-color: red !important;
+}
 
 .fc-timegrid-slot .fc-timegrid-slot-label {
     color: black;
 }
+
 #calendar {
     position: relative;
     width: 100%;
@@ -14,6 +23,7 @@
     border-radius: 8px;
     overflow: hidden;
 }
+
 .fc .fc-toolbar.fc-header-toolbar {
     margin-bottom: 0 !important;
 }
@@ -61,7 +71,7 @@
     display: none; /* Default hidden */
 }
 
-.fc-col-header-cell-cushion{
+.fc-col-header-cell-cushion {
     color: #000000;
 }
 
@@ -71,4 +81,12 @@
 
 .fc-timegrid-slot-label-cushion {
     font-weight: 600;
+}
+
+#legend-card {
+    position: relative;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: transparent;
 }

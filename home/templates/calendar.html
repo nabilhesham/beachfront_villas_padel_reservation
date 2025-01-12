@@ -8,16 +8,45 @@
 {% endblock %}
 
 {% block content %}
-    <div class="card" style="position:relative; height: 100%; background-color: transparent; border: none;">
-        <div class="card-body p-0" style="position:relative; height: 100%">
-{#            <div id="calendarLoader" class="d-none position-absolute w-100 text-center" style="top: 50%; transform: translateY(-50%);">#}
-            <div id="calendarLoader" class="">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
+    <div class="d-flex" style="flex-direction: column;position:relative; height: 100%">
+        <div class="card" style="position:relative; width:100%; height: 90%; background-color: transparent; border: none;">
+            <div class="card-body p-0" style="position:relative; height: 100%">
+                <div id="calendarLoader" class="">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div id="calendar"></div>
+            </div>
+        </div>
+        <div class="row d-flex justify-content-end">
+            <div class="col-12 col-md-6">
+                <div class="card mt-1 mb-1" id="legend-card">
+                    <div class="card-body p-0" style="position:relative; height: 100%">
+                        <div class="row justify-content-end">
+                            <div class="col-12 col-md-6">
+                                <i class="fa-solid fa-square" style="color: green;"></i>
+                                <span style="font-size: 10pt">Match open for main players</span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <i class="fa-solid fa-square" style="color: yellow;"></i>
+                                <span style="font-size: 10pt">Match open for reserve players</span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <i class="fa-solid fa-square" style="color: red;"></i>
+                                <span style="font-size: 10pt">Match complete</span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <i class="fa-solid fa-square"  style="background-color: #000; color: #000;"></i>
+                                <span style="font-size: 10pt">No match</span>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
-            <div id="calendar"></div>
         </div>
+
     </div>
 {% endblock %}
 
