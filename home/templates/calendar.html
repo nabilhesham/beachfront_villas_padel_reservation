@@ -266,12 +266,13 @@
                                     </tbody>
                                 </table>
 
-                                <select id="playerType" class="form-control" style="cursor: pointer;" ${matchData.isMatchOpenForReservation && !matchData.isMatchPlayingNow ? '' : 'disabled'}>
+                                <label for="playerType" class="form-label">Select Reservation Type</label>
+                                <select id="playerType" class="form-control form-select" style="cursor: pointer;" ${matchData.isMatchOpenForReservation && !matchData.isMatchPlayingNow ? '' : 'disabled'}>
                                     <option value="main">Main Player</option>
                                     <option value="reserve">Reserve Player</option>
                                 </select>
-                                <button id="togglePlayerReservationButton" class="btn btn-dark mt-3 w-100" ${matchData.isMatchOpenForReservation && !matchData.isMatchPlayingNow ? '' : 'disabled'}>
-                                    Add/Remove/Switch Player Reservation
+                                <button id="togglePlayerReservationButton" class="btn btn-primary mt-3 w-100" ${matchData.isMatchOpenForReservation && !matchData.isMatchPlayingNow ? '' : 'disabled'}>
+                                    Click Here to Add/Remove/Switch Player Reservation
                                 </button>
                                 <div id="modalLoader" class="d-none text-center mt-3">
                                     <div class="spinner-border text-primary" role="status">

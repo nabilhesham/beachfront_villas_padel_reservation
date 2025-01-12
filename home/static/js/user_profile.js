@@ -32,9 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             row.innerHTML = `
                                 <td>${subUser.username}</td>
                                 <td>
-                                    <button class="btn btn-danger btn-sm delete-sub-user" data-id="${subUser.id}">
-                                        Delete
-                                    </button>
+                                    <button class="btn btn-danger btn-sm delete-sub-user" data-id="${subUser.id}">Click to Delete User</button>
                                 </td>
                             `;
                             subUsersTable.querySelector('tbody').appendChild(row);

@@ -59,16 +59,17 @@
                                     </div>
                                 </div>
                                 <!-- Sub Users Table -->
-                                <table id="sub-users-table" class="table">
-                                    <thead>
-                                        <tr>
-{#                                            <th>ID</th>#}
-                                            <th>Username</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
+                                <div class="table-responsive">
+                                    <table id="sub-users-table" class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Username</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
                             </div>
 
                             <!-- Add Sub-User Form -->
@@ -83,7 +84,7 @@
                                         </div>
                                       <div class="form-text" id="basic-addon4">Sub User username will be "(username)_(sub-user-username)".</div>
                                     </div>
-                                    <button type="submit" class="btn btn-dark">Add Sub-User</button>
+                                    <button type="submit" class="btn btn-primary">Click to Add Sub-User</button>
                                 </form>
                             </div>
                         {% endif %}
