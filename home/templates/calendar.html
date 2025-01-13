@@ -254,12 +254,12 @@
             // Create the Main Players table
             const mainPlayersTable = matchData.mainPlayers.length > 0 ?
                 matchData.mainPlayers.map(player => `<tr><td>${player}</td></tr>`).join('') :
-                '<tr><td>0</td></tr>';  // If no players, render 0
+                '<tr><td></td></tr>';  // If no players, render nothing
 
             // Create the Reserve Players table
             const reservePlayersTable = matchData.reservePlayers.length > 0 ?
                 matchData.reservePlayers.map(player => `<tr><td>${player}</td></tr>`).join('') :
-                '<tr><td>0</td></tr>';  // If no players, render 0
+                '<tr><td></td></tr>';  // If no players, render nothing
 
             // modal HTML
             const modalContent = `
