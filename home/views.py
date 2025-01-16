@@ -19,6 +19,7 @@ import json
 from .models import Match, Reservation
 from .decorators import custom_login_required
 from .helper import *
+from .variables import *
 
 # Define User Model
 User = get_user_model()
@@ -71,8 +72,6 @@ def logout_view(request):
     return redirect('login')  # Redirect to login page after logout
 
 ############################# Sub User Views ##########################################
-allowed_sub_users_count = 4
-
 @custom_login_required
 @require_http_methods(["POST"])
 def add_sub_user(request):
@@ -288,3 +287,77 @@ def toggle_player_reservation(request):
 
         except ValidationError as e:
             return JsonResponse({'error': str(e)}, status=400)
+
+@custom_login_required
+def get_user_reservation_quota(request):
+    data = {}
+    try:
+        user = request.user
+        data['user'] = user.username
+
+        # get dates
+        today = datetime.now().date()
+        print(f'today: {today}')
+        data['today'] = today
+        week_start = today - timedelta(days=today.weekday())  # Monday
+
+        next_monday = today + timedelta(days=(7 - today.weekday()))  # Days until the next Monday
+        print(f'Next Monday: {next_monday}')
+
+        print(f'week_start: {week_start}')
+        data['week_start'] = week_start
+        week_end = week_start + timedelta(days=6)  # Sunday
+        print(f'week_end: {week_end}')
+        data['week_end'] = week_end
+
+        # Count reservations during busy hours for user
+        busy_hour_reservations = Reservation.objects.filter(
+            user=user,
+            match__start_time__date__gte=week_start,
+            match__start_time__date__lt=next_monday,
+            match__start_time__hour__gte=busy_hour_start_hour,
+            match__end_time__hour__lte=busy_hour_end_hour,
+        )
+
+        print(busy_hour_reservations)
+        all_busy_hour_reservations = busy_hour_reservations
+
+        if user.is_master is False:
+            # if user is sub count parent reservations
+            parent_user = user.parent
+            # Count reservations during busy hours for user
+            parent_busy_hour_reservations = Reservation.objects.filter(
+                user=parent_user,
+                match__start_time__date__gte=week_start,
+                match__start_time__date__lt=next_monday,
+                match__start_time__hour__gte=busy_hour_start_hour,
+                match__end_time__hour__lte=busy_hour_end_hour,
+            )
+            # Combine user's and parent's reservations
+            all_busy_hour_reservations = busy_hour_reservations | parent_busy_hour_reservations
+        else:
+            # if user is parent count children reservations
+            sub_users_sql = User.objects.filter(parent=user)
+            for sub_user in sub_users_sql:
+                # Count reservations during busy hours for user
+                children_busy_hour_reservations = Reservation.objects.filter(
+                    user=sub_user,
+                    match__start_time__date__gte=week_start,
+                    match__start_time__date__lt=next_monday,
+                    match__start_time__hour__gte=busy_hour_start_hour,
+                    match__end_time__hour__lte=busy_hour_end_hour,
+                )
+                # Combine user's and children's reservations
+                all_busy_hour_reservations = busy_hour_reservations | children_busy_hour_reservations
+
+        data['user_busy_hour_main_reservations'] = list(busy_hour_reservations.filter(player_type="main").values())
+        data['user_busy_hour_reserve_reservations'] = list(busy_hour_reservations.filter(player_type="reserve").values())
+
+        # Serialize the combined reservations
+        data['villa_busy_hour_main_reservations'] = list(all_busy_hour_reservations.filter(player_type="main").values())
+        data['villa_busy_hour_reserve_reservations'] = list(all_busy_hour_reservations.filter(player_type="reserve").values())
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+    return JsonResponse(data)

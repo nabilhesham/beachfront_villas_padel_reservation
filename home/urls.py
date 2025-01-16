@@ -23,5 +23,6 @@ urlpatterns = [
     path('api/user-profile/', views.user_profile_data, name='user-profile-data'),
     path('api/matches/', views.get_matches, name='get-matches'),
     path('api/toggle-player-reservation/', views.toggle_player_reservation, name='toggle-player-reservation'),
+    path('api/user-reservation-quota/', views.get_user_reservation_quota, name='user-reservation-quota'),
 
 ]
