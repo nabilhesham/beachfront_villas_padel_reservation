@@ -54,15 +54,25 @@ def login_view(request):
 
 def change_password(request):
     if request.method == 'POST':
-        # Here you would handle the logic to change the user's password
-        # e.g., using `password_change` or `set_password` method
-        new_password = request.POST.get('password')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match. Please try again.")
+            return render(request, 'auth/change_password.html', {'user': request.user})
+
+        # if len(password) < 8:
+        #     messages.error(request, "Password must be at least 8 characters long.")
+        #     return render(request, 'auth/change_password.html', {'user': request.user})
+
         user = request.user
-        user.set_password(new_password)
+        user.set_password(password)
         user.default_password = False  # Set this to False once password is updated
         user.save()
+
         messages.success(request, "Your password has been updated.")
         return redirect('login')  # Redirect to login page after password change
+
     return render(request, 'auth/change_password.html', {'user': request.user})
 
 
