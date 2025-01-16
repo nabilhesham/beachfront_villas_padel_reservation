@@ -9,6 +9,15 @@ function formatDate(date) {
     return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 }
 
+function formatDateString(dateInput) {
+  const date = new Date(dateInput);
+  const day = date.toLocaleString('en-US', { weekday: 'short' }); // e.g., "Fri"
+  const month = date.getMonth() + 1; // Months are 0-indexed
+  const dayOfMonth = date.getDate(); // Day of the month
+
+  return `${day} ${month}/${dayOfMonth}`;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     initCalendar();
     getPlayerQuota();
@@ -327,6 +336,7 @@ function getPlayerQuota() {
             document.getElementById("user-reserve-quota").textContent = `${data.user_busy_hour_reserve_reservations.length}/${AllowedUserBusyHourReserveReservations}`;
             document.getElementById("total-main-quota").textContent = `${data.villa_busy_hour_main_reservations.length}/${AllowedTotalBusyHourMainReservations}`;
             document.getElementById("total-reserve-quota").textContent = `${data.villa_busy_hour_reserve_reservations.length}/${AllowedTotalBusyHourReserveReservations}`;
+            document.getElementById("start-end-week").textContent = `from ${formatDateString(data.week_start)} to ${formatDateString(data.week_end)}`;
         })
         .catch((error) => {
             // Handle errors (e.g., network issues, API errors)
