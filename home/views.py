@@ -307,17 +307,13 @@ def get_user_reservation_quota(request):
 
         # get dates
         today = datetime.now().date()
-        print(f'today: {today}')
         data['today'] = today
         week_start = today - timedelta(days=today.weekday())  # Monday
 
         next_monday = today + timedelta(days=(7 - today.weekday()))  # Days until the next Monday
-        print(f'Next Monday: {next_monday}')
 
-        print(f'week_start: {week_start}')
         data['week_start'] = week_start
         week_end = week_start + timedelta(days=6)  # Sunday
-        print(f'week_end: {week_end}')
         data['week_end'] = week_end
 
         # Count reservations during busy hours for user
@@ -329,7 +325,6 @@ def get_user_reservation_quota(request):
             match__end_time__hour__lte=busy_hour_end_hour,
         )
 
-        print(busy_hour_reservations)
         all_busy_hour_reservations = busy_hour_reservations
 
         if user.is_master is False:

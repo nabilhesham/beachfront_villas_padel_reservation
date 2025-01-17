@@ -24,6 +24,8 @@ def validate_time_slot(date, start_time):
     if day_of_week in no_match_days_list:
         if no_match_days_start_hour <= start_time.time() < no_match_days_end_hour:
             return False
+    if no_match_all_week_start_hour <= start_time.time() < no_match_all_week_end_hour:
+        return False
     return True
 
 

@@ -106,7 +106,17 @@ function initCalendar(){
         slotLabelFormat: { hour: 'numeric', minute: '2-digit', omitZeroMinute: false },
         eventContent: function(arg) {
             const { event } = arg;
+
+            // block  saturday and sunday matches at 9 AM
             if ((event.start.getDay() === 0 || event.start.getDay() === 6) && event.start.getHours() === 9) {
+                let cellHtml = `<div class="fc-event-custom" style="background-color: #000; pointer-events: none;">`
+                 cellHtml += `</div>`;
+                return {
+                    html: cellHtml
+                };
+            }
+            // block all week matches at 13 PM & 14 PM
+            if (event.start.getHours() === 13 || event.start.getHours() === 14) {
                 let cellHtml = `<div class="fc-event-custom" style="background-color: #000; pointer-events: none;">`
                  cellHtml += `</div>`;
                 return {
@@ -156,6 +166,8 @@ function initCalendar(){
         eventClick: function(info) {
 
             if ((info.event.start.getDay() === 0 || info.event.start.getDay() === 6) && info.event.start.getHours() === 9) {
+                showToast('OFF Time!!!', 'danger');
+            } else if (info.event.start.getHours() === 13 || info.event.start.getHours() === 14) {
                 showToast('OFF Time!!!', 'danger');
             } else {
 

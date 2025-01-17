@@ -8,6 +8,9 @@ no_match_days_list = [5, 6]   # Saturday or Sunday
 no_match_days_start_hour = time(9, 0)   # 9 AM
 no_match_days_end_hour = time(10, 0)   # 10 AM
 
+no_match_all_week_start_hour = time(13, 0)   # 1 PM
+no_match_all_week_end_hour = time(15, 0)   # 3 PM
+
 # Busy Hours Variables
 busy_hour_start_hour = 17   # Busy hours start at 5 PM
 busy_hour_start = time(busy_hour_start_hour, 0)
