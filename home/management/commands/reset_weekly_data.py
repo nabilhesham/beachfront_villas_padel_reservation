@@ -40,14 +40,15 @@ class Command(BaseCommand):
 
             today = datetime.now().date()
             self.stdout.write(self.style.SUCCESS(f'today: {today}'))
-            last_monday = today - timedelta(days=today.weekday())  # Get last Monday
-            self.stdout.write(self.style.SUCCESS(f'last_monday: {last_monday}'))
+            # Calculate the Monday of the current week
+            start_of_week = today - timedelta(days=today.weekday())
+            self.stdout.write(self.style.SUCCESS(f'start_of_week: {start_of_week}'))
 
 
             # Delete all reservations
             # Reservation.objects.all().delete()
             reservations = Reservation.objects.filter(
-                match__start_time__date__lt=last_monday
+                match__start_time__date__lt=start_of_week
             )
             reservations.delete()
             self.stdout.write(self.style.SUCCESS(f'{reservations.count()} reservations have been cleared.'))
@@ -55,7 +56,7 @@ class Command(BaseCommand):
             # Delete all matches
             # Match.objects.all().delete()
             matches = Match.objects.filter(
-                start_time__date__lt=last_monday
+                start_time__date__lt=start_of_week
             )
             matches.delete()
             self.stdout.write(self.style.SUCCESS(f'{matches.count()} matches have been cleared.'))
