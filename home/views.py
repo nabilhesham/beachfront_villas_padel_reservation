@@ -39,14 +39,16 @@ def login_view(request):
                 # Check if this is the first time the user is logging in
                 login(request, user)
                 if user.default_password:
-                    messages.success(request, f"first time login please change your password!")
+                    # messages.success(request, f"first time login please change your password!")
+                    messages.success(request, f"Première connexion, veuillez changer votre mot de passe !")
                     return redirect('change-password')
                 # Welcome, {user.username}
                 messages.success(request, f"Bienvenue, {user.username}")
                 return redirect('home')  # Redirect to home page after successful login
         else:
             # Add a non-field error if form is invalid
-            messages.error(request, "Invalid username or password.")
+            # messages.error(request, "Invalid username or password.")
+            messages.error(request, "Nom d'utilisateur ou mot de passe invalide.")
     else:
         form = AuthenticationForm()
 
@@ -59,7 +61,8 @@ def change_password(request):
         confirm_password = request.POST.get('confirm_password')
 
         if password != confirm_password:
-            messages.error(request, "Passwords do not match. Please try again.")
+            # messages.error(request, "Passwords do not match. Please try again.")
+            messages.error(request, "Les mots de passe ne correspondent pas. Veuillez réessayer.")
             return render(request, 'auth/change_password.html', {'user': request.user})
 
         # if len(password) < 8:
@@ -71,7 +74,8 @@ def change_password(request):
         user.default_password = False  # Set this to False once password is updated
         user.save()
 
-        messages.success(request, "Your password has been updated.")
+        # messages.success(request, "Your password has been updated.")
+        messages.success(request, "Votre mot de passe a été mis à jour.")
         return redirect('login')  # Redirect to login page after password change
 
     return render(request, 'auth/change_password.html', {'user': request.user})
@@ -90,32 +94,40 @@ def add_sub_user(request):
     sub_username = request.POST.get("sub_username", "").strip()
 
     if not sub_username:
-        return JsonResponse({"error": "Sub-user name cannot be empty"}, status=400)
+        # return JsonResponse({"error": "Sub-user name cannot be empty"}, status=400)
+        return JsonResponse({"error": "Le nom du sous-utilisateur ne peut pas être vide."}, status=400)
 
     if user.parent:
-        return JsonResponse({"error": "Sub-users cannot create sub-users"}, status=403)
+        # return JsonResponse({"error": "Sub-users cannot create sub-users"}, status=403)
+        return JsonResponse({"error": "Les sous-utilisateurs ne peuvent pas créer de sous-utilisateurs."}, status=403)
 
     if User.objects.filter(parent=user).count() >= allowed_sub_users_count:
-        return JsonResponse({"error": f"You can only add up to {allowed_sub_users_count} sub-users."}, status=400)
+        # return JsonResponse({"error": f"You can only add up to {allowed_sub_users_count} sub-users."}, status=400)
+        return JsonResponse({"error": f"Vous pouvez ajouter jusqu'à {allowed_sub_users_count} sous-utilisateurs."}, status=400)
 
     sub_username = f"{user.username}_{sub_username}"
     if User.objects.filter(username=sub_username).exists():
-        return JsonResponse({"error": "Sub-user with this name already exists"}, status=400)
+        # return JsonResponse({"error": "Sub-user with this name already exists"}, status=400)
+        return JsonResponse({"error": "Un sous-utilisateur avec ce nom existe déjà."}, status=400)
     sub_user = User.objects.create(username=sub_username, parent=user, password=user.password, default_password=False)
-    return JsonResponse({"success": f"Sub-User {sub_user.username} added successfully.", "sub_user": {"id": sub_user.id, "username": sub_user.username}})
+    # return JsonResponse({"success": f"Sub-User {sub_user.username} added successfully.", "sub_user": {"id": sub_user.id, "username": sub_user.username}})
+    return JsonResponse({"success": f"Sous-utilisateur {sub_user.username} ajouté avec succès.", "sub_user": {"id": sub_user.id, "username": sub_user.username}})
 
 @custom_login_required
 @require_http_methods(["DELETE"])
 def delete_sub_user(request, sub_user_id):
     user = request.user
     if user.parent:
-        return JsonResponse({'error': 'You cannot delete sub-users.'}, status=403)
+        # return JsonResponse({'error': 'You cannot delete sub-users.'}, status=403)
+        return JsonResponse({'error': 'Vous ne pouvez pas supprimer de sous-utilisateurs.'}, status=403)
     try:
         sub_user = User.objects.get(id=sub_user_id, parent=user)
         sub_user.delete()
-        return JsonResponse({"message": f"Sub-User {sub_user.username} deleted successfully."})
+        # return JsonResponse({"message": f"Sub-User {sub_user.username} deleted successfully."})
+        return JsonResponse({"message": f"Sous-utilisateur {sub_user.username} supprimé avec succès."})
     except User.DoesNotExist:
-        return JsonResponse({"error": f"Sub-User {sub_user_id} not found."}, status=404)
+        # return JsonResponse({"error": f"Sub-User {sub_user_id} not found."}, status=404)
+        return JsonResponse({"error": f"Sous-utilisateur {sub_user_id} introuvable."}, status=404)
 
 
 ############################# App Views ##########################################
@@ -248,7 +260,8 @@ def toggle_player_reservation(request):
 
         # Validate time slot
         if not validate_time_slot(match_start.date(), match_start):
-            return JsonResponse({'error': 'This time slot is unavailable!'}, status=400)
+            # return JsonResponse({'error': 'This time slot is unavailable!'}, status=400)
+            return JsonResponse({'error': "Ce créneau horaire n'est pas disponible !"}, status=400)
 
         # Find or create the match
         match, created = Match.objects.get_or_create(start_time=match_start, end_time=match_end)
@@ -264,12 +277,17 @@ def toggle_player_reservation(request):
                     # Validate busy hour limits
                     if is_busy_hour(match_start, match_end):
                         if player_type == "reserve" and not validate_reserve_reservation(match, user):
-                            return JsonResponse({'error': 'Related Players are main players in the same match'},
-                                                status=400)
+                            # return JsonResponse({'error': 'Related Players are main players in the same match'},
+                            #                     status=400)
+                         return JsonResponse({'error': "Les joueurs concernés sont des joueurs principaux dans le même match."},
+                                                                        status=400)
 
                         if not validate_busy_hour_limit(user, player_type):
+                            # return JsonResponse(
+                            #     {'error': 'You have reached the limit for reservations during busy hours.'},
+                            #     status=400)
                             return JsonResponse(
-                                {'error': 'You have reached the limit for reservations during busy hours.'},
+                                {'error': "Vous avez atteint la limite de réservations pendant les heures de forte affluence."},
                                 status=400)
 
                     # toggle existed reservation
@@ -280,12 +298,17 @@ def toggle_player_reservation(request):
                 # Validate busy hour limits
                 if is_busy_hour(match_start, match_end):
                     if player_type == "reserve" and not validate_reserve_reservation(match, user):
-                        return JsonResponse({'error': 'Related Players are main players in the same match'},
+                        # return JsonResponse({'error': 'Related Players are main players in the same match'},
+                        #                     status=400)
+                        return JsonResponse({'error': "Les joueurs concernés sont des joueurs principaux dans le même match."},
                                             status=400)
 
                     if not validate_busy_hour_limit(user, player_type):
-                        return JsonResponse({'error': 'You have reached the limit for reservations during busy hours.'},
-                                            status=400)
+                        # return JsonResponse({'error': 'You have reached the limit for reservations during busy hours.'},
+                        #                     status=400)
+                        return JsonResponse(
+                            {'error': "Vous avez atteint la limite de réservations pendant les heures de forte affluence."},
+                            status=400)
 
                 # Create a new reservation
                 Reservation.objects.create(user=user, match=match, player_type=player_type)

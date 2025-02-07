@@ -97,10 +97,12 @@ document.addEventListener('DOMContentLoaded', function () {
         })
             .then(response => {
                 if (response.ok) {
-                    showToast('Sub-User deleted successfully', 'success');
+                    // showToast('Sub-User deleted successfully', 'success');
+                    showToast('Sous-utilisateur supprimé avec succès', 'success');
                     fetchProfileData(); // Refresh profile data
                 } else {
-                    showToast('Failed to delete Sub-User', 'danger');
+                    // showToast('Failed to delete Sub-User', 'danger');
+                    showToast('Échec de la suppression du sous-utilisateur.', 'danger');
                     toggleSpinner(false); // Hide spinner
                 }
             })

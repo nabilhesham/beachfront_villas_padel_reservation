@@ -170,9 +170,11 @@ function initCalendar(){
         eventClick: function(info) {
 
             if ((info.event.start.getDay() === 0 || info.event.start.getDay() === 6) && info.event.start.getHours() === 9) {
-                showToast('OFF Time!!!', 'danger');
+                // showToast('OFF Time!!!', 'danger');
+                showToast('Heures creuses!!!', 'danger');
             } else if (info.event.start.getHours() === 13 || info.event.start.getHours() === 14) {
-                showToast('OFF Time!!!', 'danger');
+                // showToast('OFF Time!!!', 'danger');
+                showToast('Heures creuses!!!', 'danger');
             } else {
 
                 const matchStartTime = new Date(info.event.start); // Match's start time
@@ -234,16 +236,19 @@ function openMatchDetailsModal(matchData) {
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="matchDetailsModalLabel">Match Details</h5>
+<!--                        <h5 class="modal-title" id="matchDetailsModalLabel">Match Details</h5>-->
+                        <h5 class="modal-title" id="matchDetailsModalLabel">Détails du match</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <h5>Match Details</h5>
+<!--                        <h5>Match Details</h5>-->
+                        <h5>Détails du match</h5>
 
                         <!-- Main Players Table -->
                         <table class="table table-bordered table-responsive">
                             <thead>
-                                <tr><th class="table-dark">Main Players</th></tr>
+<!--                                <tr><th class="table-dark">Main Players</th></tr>-->
+                                <tr><th class="table-dark">Joueurs principaux</th></tr>
                             </thead>
                             <tbody>
                                 ${mainPlayersTable}  <!-- Insert the main players here -->
@@ -253,20 +258,25 @@ function openMatchDetailsModal(matchData) {
                         <!-- Reserve Players Table -->
                         <table class="table table-bordered table-responsive">
                             <thead>
-                                <tr><th class="table-dark">Reserve Players</th></tr>
+<!--                                <tr><th class="table-dark">Reserve Players</th></tr>-->
+                                <tr><th class="table-dark">Joueurs remplaçants</th></tr>
                             </thead>
                             <tbody>
                                 ${reservePlayersTable}  <!-- Insert the reserve players here -->
                             </tbody>
                         </table>
 
-                        <label for="playerType" class="form-label">Select Reservation Type</label>
+<!--                        <label for="playerType" class="form-label">Select Reservation Type</label>-->
+                        <label for="playerType" class="form-label">Sélectionnez le type de réservation</label>
                         <select id="playerType" class="form-control form-select" style="cursor: pointer;" ${matchData.isMatchOpenForReservation && !matchData.isMatchPlayingNow ? '' : 'disabled'}>
-                            <option value="main">Main Player</option>
-                            <option value="reserve">Reserve Player</option>
+<!--                            <option value="main">Main Player</option>-->
+                            <option value="main">Joueur principal</option>
+<!--                            <option value="reserve">Reserve Player</option>-->
+                            <option value="reserve">Joueur remplaçant</option>
                         </select>
                         <button id="togglePlayerReservationButton" class="btn btn-primary mt-3 w-100" ${matchData.isMatchOpenForReservation && !matchData.isMatchPlayingNow ? '' : 'disabled'}>
-                            Click Here to Add/Remove/Switch Player Reservation
+<!--                            Click Here to Add/Remove/Switch Player Reservation-->
+                            Cliquez ici pour ajouter/supprimer/modifier la réservation d'un joueur
                         </button>
                         <div id="modalLoader" class="d-none text-center mt-3">
                             <div class="spinner-border text-primary" role="status">
