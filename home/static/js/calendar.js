@@ -153,9 +153,9 @@ function initCalendar(){
             cellHtml += `</span>`
 
             if (isMatchPlayingNow === true){
-                cellHtml += `<span style="width: 90%; font-size: 12pt; font-weight: 700;">Playing Now</span>`
+                cellHtml += `<span style="width: 90%; font-size: 8pt; font-weight: 700;">Playing Now</span>`
             }else{
-                cellHtml += `<span style="width: 90%;">Main: <strong>${mainPlayers.length}</strong> - Reserve: <strong>${reservePlayers.length}</strong></span>`
+                cellHtml += `<span style="width: 90%; font-size: 7pt;">Main: <strong>${mainPlayers.length}</strong> - Reserve: <strong>${reservePlayers.length}</strong></span>`
             }
             cellHtml += `</div>`;
 

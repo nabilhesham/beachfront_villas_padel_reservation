@@ -47,6 +47,11 @@
     height: 3em;
 }
 
+.fc-direction-ltr .fc-timegrid-col-events {
+    /* margin: 0px 2.5% 0px 2px; */
+    margin: 0;
+}
+
 .d-block {
     display: block !important;
     visibility: visible;
