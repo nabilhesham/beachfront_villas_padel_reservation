@@ -11,7 +11,8 @@ function formatDate(date) {
 
 function formatDateString(dateInput) {
   const date = new Date(dateInput);
-  const day = date.toLocaleString('en-US', { weekday: 'short' }); // e.g., "Fri"
+  // const day = date.toLocaleString('en-US', { weekday: 'short' }); // e.g., "Fri"
+  const day = date.toLocaleString('fr-FR', { weekday: 'short' }); // e.g., "Fri"
   const month = date.getMonth() + 1; // Months are 0-indexed
   const dayOfMonth = date.getDate(); // Day of the month
 
@@ -44,6 +45,7 @@ function initCalendar(){
     }
     calendar = new FullCalendar.Calendar(calendarEl, {
         timeZone: 'local',  // Ensure FullCalendar uses the local timezone
+        locale: 'fr',
         initialView: 'timeGrid',
         views: {
             timeGrid: {
@@ -153,9 +155,11 @@ function initCalendar(){
             cellHtml += `</span>`
 
             if (isMatchPlayingNow === true){
-                cellHtml += `<span style="width: 90%; font-size: 8pt; font-weight: 700;">Playing Now</span>`
+                // cellHtml += `<span style="width: 90%; font-size: 8pt; font-weight: 700;">Playing Now</span>`
+                cellHtml += `<span style="width: 90%; font-size: 8pt; font-weight: 700;">En train de jouer</span>`
             }else{
-                cellHtml += `<span style="width: 90%; font-size: 7pt;">Main: <strong>${mainPlayers.length}</strong> - Reserve: <strong>${reservePlayers.length}</strong></span>`
+                // cellHtml += `<span style="width: 90%; font-size: 7pt;">Main: <strong>${mainPlayers.length}</strong> - Reserve: <strong>${reservePlayers.length}</strong></span>`
+                cellHtml += `<span style="width: 90%; font-size: 7pt;">Principal: <strong>${mainPlayers.length}</strong> - Remplaçant: <strong>${reservePlayers.length}</strong></span>`
             }
             cellHtml += `</div>`;
 
@@ -266,7 +270,8 @@ function openMatchDetailsModal(matchData) {
                         </button>
                         <div id="modalLoader" class="d-none text-center mt-3">
                             <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
+<!--                                <span class="visually-hidden">Loading...</span>-->
+                                <span class="visually-hidden">Chargement...</span>
                             </div>
                         </div>
                     </div>
@@ -348,7 +353,8 @@ function getPlayerQuota() {
             document.getElementById("user-reserve-quota").textContent = `${data.user_busy_hour_reserve_reservations.length}/${AllowedUserBusyHourReserveReservations}`;
             document.getElementById("total-main-quota").textContent = `${data.villa_busy_hour_main_reservations.length}/${AllowedTotalBusyHourMainReservations}`;
             document.getElementById("total-reserve-quota").textContent = `${data.villa_busy_hour_reserve_reservations.length}/${AllowedTotalBusyHourReserveReservations}`;
-            document.getElementById("start-end-week").textContent = `from ${formatDateString(data.week_start)} to ${formatDateString(data.week_end)}`;
+            // document.getElementById("start-end-week").textContent = `from ${formatDateString(data.week_start)} to ${formatDateString(data.week_end)}`;
+            document.getElementById("start-end-week").textContent = `de ${formatDateString(data.week_start)} à ${formatDateString(data.week_end)}`;
         })
         .catch((error) => {
             // Handle errors (e.g., network issues, API errors)

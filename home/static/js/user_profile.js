@@ -32,7 +32,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             row.innerHTML = `
                                 <td>${subUser.username}</td>
                                 <td>
-                                    <button class="btn btn-danger btn-sm delete-sub-user" data-id="${subUser.id}">Click to Delete User</button>
+<!--                                    <button class="btn btn-danger btn-sm delete-sub-user" data-id="${subUser.id}">Click to Delete User</button>-->
+                                    <button class="btn btn-danger btn-sm delete-sub-user" data-id="${subUser.id}">Cliquez pour supprimer l'utilisateur</button>
                                 </td>
                             `;
                             subUsersTable.querySelector('tbody').appendChild(row);
@@ -45,7 +46,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             });
                         });
                     } else {
-                        subUsersTable.querySelector('tbody').innerHTML = '<tr><td colspan="3">No Sub-Users</td></tr>';
+                        // subUsersTable.querySelector('tbody').innerHTML = '<tr><td colspan="3">No Sub-Users</td></tr>';
+                        subUsersTable.querySelector('tbody').innerHTML = '<tr><td colspan="3">Aucun sous-utilisateur</td></tr>';
                     }
 
                     // Toggle Add-Sub-User Section

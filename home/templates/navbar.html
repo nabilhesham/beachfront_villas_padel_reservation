@@ -25,7 +25,7 @@
                     <li>
                         <form class="d-flex" method="POST" action="{% url 'logout' %}">
                             {% csrf_token %}
-                            <button class="dropdown-item" type="submit">Logout</button>
+                            <button class="dropdown-item" type="submit">{# Logout #}Se déconnecter</button>
                         </form>
                     </li>
                 </ul>

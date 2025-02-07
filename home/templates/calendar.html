@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block sub-title %}Calendar{% endblock %}
+{% block sub-title %}{# Calendar #}Calendrier{% endblock %}
 
 {% block head %}
     <link rel="stylesheet" href="{% static 'css/calendar.css' %}">
@@ -13,7 +13,7 @@
             <div class="card-body p-0" style="position:relative; height: 100%">
                 <div id="calendarLoader" class="">
                     <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                        <span class="visually-hidden">{# Loading #}Chargement...</span>
                     </div>
                 </div>
                 <div id="calendar"></div>
@@ -29,7 +29,7 @@
                         <!-- Loader -->
                         <div id="quota-content-loader" style="text-align: center; margin-top: 20px;">
                             <div class="spinner-border" role="status">
-                                <span class="visually-hidden">Loading...</span>
+                                <span class="visually-hidden">{# Loading #}Chargement...</span>
                             </div>
                         </div>
 
@@ -37,25 +37,29 @@
                         <div id="quota-content" class="row justify-content-start" style="display: none;">
                             <div class="col-6">
                                 <span style="font-size: 10pt;font-weight: 500;">
-                                    User main quota:
+                                    {# User main quota #}
+                                    Quota principal de l'utilisateur:
                                     <span id="user-main-quota" style="font-weight: 400;">0/0</span>
                                 </span>
                             </div>
                             <div class="col-6">
                                 <span style="font-size: 10pt;font-weight: 500;">
-                                    Villa main quota:
+                                    {# Villa main quota #}
+                                    Quota principal de la villa:
                                     <span id="total-main-quota" style="font-weight: 400;">0/0</span>
                                 </span>
                             </div>
                             <div class="col-6">
                                 <span style="font-size: 10pt;font-weight: 500;">
-                                    User reserve quota:
+                                    {# User reserve quota #}
+                                    Quota de réservation de l'utilisateur:
                                     <span id="user-reserve-quota" style="font-weight: 400;">0/0</span>
                                 </span>
                             </div>
                             <div class="col-6">
                                 <span style="font-size: 10pt;font-weight: 500;">
-                                    Villa reserve quota:
+                                    {# Villa reserve quota #}
+                                    Quota de réservation de la villa :
                                     <span id="total-reserve-quota" style="font-weight: 400;">0/0</span>
                                 </span>
                             </div>
@@ -70,19 +74,23 @@
                         <div class="row justify-content-start">
                             <div class="col-12 col-md-6">
                                 <i class="fa-solid fa-square" style="color: green;"></i>
-                                <span style="font-size: 10pt">Match open for main players</span>
+{#                                <span style="font-size: 10pt">Match open for main players</span>#}
+                                <span style="font-size: 10pt">Match ouvert pour les joueurs principaux</span>
                             </div>
                             <div class="col-12 col-md-6">
                                 <i class="fa-solid fa-square" style="color: yellow;"></i>
-                                <span style="font-size: 10pt">Match open for reserve players</span>
+{#                                <span style="font-size: 10pt">Match open for reserve players</span>#}
+                                <span style="font-size: 10pt">Match ouvert pour les joueurs remplaçants</span>
                             </div>
                             <div class="col-12 col-md-6">
                                 <i class="fa-solid fa-square" style="color: red;"></i>
-                                <span style="font-size: 10pt">Match complete</span>
+{#                                <span style="font-size: 10pt">Match complete</span>#}
+                                <span style="font-size: 10pt">Match complet</span>
                             </div>
                             <div class="col-12 col-md-6">
                                 <i class="fa-solid fa-square"  style="background-color: #000; color: #000;"></i>
-                                <span style="font-size: 10pt">No match</span>
+{#                                <span style="font-size: 10pt">No match</span>#}
+                                <span style="font-size: 10pt">Aucun match</span>
                             </div>
                         </div>
 

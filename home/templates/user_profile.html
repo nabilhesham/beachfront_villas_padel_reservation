@@ -2,7 +2,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block sub-title %}Profile{% endblock %}
+{% block sub-title %}{# Profile #}Profil{% endblock %}
 
 {% block head %}
     <style>
@@ -21,13 +21,14 @@
 
 {% block content %}
     <div class="d-flex flex-column align-items-center justify-content-center" style="height: 100%">
-        <h1>User Profile</h1>
+{#        <h1>User Profile</h1>#}
+        <h1>Profil de l'utilisateur</h1>
 
         <div class="row d-flex justify-content-center mb-2" style="width: 100%">
             <div class="col-12 col-md-8 col-lg-6">
                 <div class="card" style="position:relative;">
                     <div class="card-body p-2" style="position:relative;">
-                        <p class="m-0"><strong>USERNAME: </strong> <span id="username">{{ user.username }}</span> </p>
+                        <p class="m-0"><strong>{# USERNAME #}NOM D'UTILISATEUR: </strong> <span id="username">{{ user.username }}</span> </p>
                         <!-- Parent Details -->
                         {% if user.parent %}
                             <div id="parent-section" style="display: block;">
@@ -46,16 +47,19 @@
                     <div class="card-body p-2" style="position:relative;">
 
                         {% if user.parent %}
-                            <p class="text-danger">You are a sub-user and cannot manage other users.</p>
+{#                            <p class="text-danger">You are a sub-user and cannot manage other users.</p>#}
+                            <p class="text-danger">Vous êtes un sous-utilisateur et ne pouvez pas gérer d'autres utilisateurs.</p>
                         {% else %}
 
                             <!-- Sub-Users Section -->
-                            <h4>Sub-Users</h4>
+{#                            <h4>Sub-Users</h4>#}
+                            <h4>Sous-utilisateurs</h4>
                             <div id="sub-users-section">
                                 <!-- Loading Spinner -->
                                 <div id="sub-users-loader">
                                     <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Loading...</span>
+{#                                        <span class="visually-hidden">Loading...</span>#}
+                                        <span class="visually-hidden">Chargement...</span>
                                     </div>
                                 </div>
                                 <!-- Sub Users Table -->
@@ -63,7 +67,8 @@
                                     <table id="sub-users-table" class="table">
                                         <thead>
                                             <tr>
-                                                <th>Username</th>
+{#                                                <th>Username</th>#}
+                                                <th>Nom d'utilisateur</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -77,14 +82,17 @@
                                 <form id="add-sub-user-form">
                                     {% csrf_token %}
                                     <div class="mb-3">
-                                        <label for="sub_username" class="form-label">Sub-User Name</label>
+{#                                        <label for="sub_username" class="form-label">Sub-User Name</label>#}
+                                        <label for="sub_username" class="form-label">Nom du sous-utilisateur</label>
                                         <div class="input-group">
                                             <span class="input-group-text" id="basic-addon3">{{ user.username }}_</span>
-                                            <input type="text" class="form-control" id="sub_username" placeholder="sub_user_name" aria-describedby="basic-addon3 basic-addon4" required>
+                                            <input type="text" class="form-control" id="sub_username" placeholder="{# Enter Sub-User username #}Entrez le nom d'utilisateur du sous-utilisateur" aria-describedby="basic-addon3 basic-addon4" required>
                                         </div>
-                                      <div class="form-text" id="basic-addon4">Sub User username will be "(username)_(sub-user-username)".</div>
+{#                                      <div class="form-text" id="basic-addon4">Sub User username will be "(username)_(sub-user-username)".</div>#}
+                                      <div class="form-text" id="basic-addon4">Le nom d'utilisateur du sous-utilisateur sera "(Nom d'utilisateur)_(nom-d'utilisateur-du-sous-utilisateur)".</div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">Click to Add Sub-User</button>
+{#                                    <button type="submit" class="btn btn-primary">Click to Add Sub-User</button>#}
+                                    <button type="submit" class="btn btn-primary">Cliquez pour ajouter un sous-utilisateur</button>
                                 </form>
                             </div>
                         {% endif %}
