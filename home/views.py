@@ -41,7 +41,8 @@ def login_view(request):
                 if user.default_password:
                     messages.success(request, f"first time login please change your password!")
                     return redirect('change-password')
-                messages.success(request, f"Welcome, {user.username}")
+                # Welcome, {user.username}
+                messages.success(request, f"Bienvenue, {user.username}")
                 return redirect('home')  # Redirect to home page after successful login
         else:
             # Add a non-field error if form is invalid

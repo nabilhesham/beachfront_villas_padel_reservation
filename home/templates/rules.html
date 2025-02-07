@@ -1,47 +1,64 @@
 <!-- user_profile.html -->
 {% extends 'base.html' %}
 
-{% block sub-title %}Rules{% endblock %}
+{% block sub-title %}{#Rules#}Règles{% endblock %}
 
 {% block head %}
 {% endblock %}
 
 {% block content %}
     <div class="d-flex flex-column align-items-center justify-content-center" style="height: 100%; position: relative;">
-        <h1 class="text-center">Rules</h1>
+        <h1 class="text-center">{#Rules#}Règles</h1>
 
         <div class="row d-flex justify-content-center  align-items-center mb-2" style="max-height: 90%; overflow: auto;">
             <div class="col-12 col-md-10 col-lg-8">
                 <div class="card" style="position:relative; min-height: fit-content; max-height: 70vh;overflow: auto;">
                     <div class="card-body p-2" style="position:relative;">
                         <ul>
-                            <li>The available slots per week (saturday and sunday No playing from 9:00-10:00AM, that’s why they are in black).</li>
-                            <li>Each slot represent a one-hour match.</li>
-                            <li>Users can only reserve 48h in advance.</li>
-                            <li>Busy hour's slots are the last 3 slots each day.</li>
-                            <li>Each user has quota for 4 sub users that can be created by the user.</li>
+{#                            - Each playing slot represent a one hour match.#}
+                            <li>Chaque créneau horaire représente un match d'une heure.</li>
+{#                            - Players can only reserve 48h in advance.#}
+                            <li>Les joueurs ne peuvent réserver que 48 heures à l'avance.</li>
+{#                            - Busy hours slots are the last 3 slots each day.#}
+                            <li>Les créneaux horaires de forte affluence sont les trois derniers créneaux de chaque jour.</li>
+{#                            - Each Villa has main player, and each main player has quota for 4 sub-players that can be created by the main player, and the sub-players can access using the same password of the main player.#}
                             <li>
-                                Each user has quota for only 2 playing times per week during busy hours,
-                                however can play during non-busy hours or be reserve for both busy hours & non-busy slots without limitation.
+                                Chaque villa a un joueur principal, et chaque joueur principal a un quota de 4 sous-joueurs qu'il peut créer.
+                                Les sous-joueurs peuvent accéder en utilisant le même mot de passe que le joueur principal.
                             </li>
+{#                            - Each player has quota to play/reserve for only 2 times per week during busy hours, however any player can play/reserve during non-busy hours without limitation.#}
                             <li>
-                                Total user & sub users has quota for only 4 playing times per week during busy hours,
-                                however can play during non-busy hours or be reserve for both busy hours & non-busy slots without limitation.
+                                Chaque joueur peut jouer/réserver seulement 2 fois par semaine pendant les heures de forte affluence.
+                                Cependant, tout joueur peut jouer/réserver sans limitation en dehors des heures de forte affluence.
                             </li>
-                            <li>Each match could have 4 main players and 4 reserve players based on users quota as mentioned above.</li>
-                            <li>Each user can only add/remove/switch slot for him/herself (No user or sub user should be able to allowed to modify for other users).</li>
+{#                            - Each villa has quota for only 4 playing times per week during busy hours.#}
+                            <li>Chaque villa a un quota de 4 créneaux de jeu par semaine pendant les heures de forte affluence.</li>
+{#                            - Each match could have 4 main players and 4 reserve players based on players quota.#}
+                            <li>Chaque match peut accueillir 4 joueurs principaux et 4 joueurs remplaçants en fonction du quota des joueurs.</li>
+{#                            - Each player can only add/remove/switch slot for him/herself (No player can  modify for other players).#}
+                            <li>Chaque joueur ne peut ajouter, supprimer ou modifier un créneau que pour lui-même (aucun joueur ne peut modifier pour un autre joueur).</li>
+{#                            - Each Match is locked 4 hours before its playing time in case 4 players already exist.  (no changes are allowed), however match will remain open if there are less than 4 players.#}
                             <li>
-                                Match should close 4 hours before its playing time in case there are completed players which mean no changes are allowed,
-                                however match will keep open if there are less than 4 main players.
+                                Chaque match est verrouillé 4 heures avant l'heure de jeu si 4 joueurs sont déjà inscrits (aucune modification n'est alors autorisée).
+                                Toutefois, le match reste ouvert s'il y a moins de 4 joueurs.
                             </li>
+{#                            - If any player under the villa reserved in the match as a « main player », no other players under the same villa could reserve as « reserve player » in the same match. (Other players under the same villa only can reserve as « main player »).#}
                             <li>
-                                If a player reserved him/her self in the match as a main player,
-                                and any related sub user to this user can't add him/her self in the match as a reserve player but only as main player.
+                                Si un joueur appartenant à une villa a réservé un match en tant que « joueur principal »,
+                                aucun autre joueur de la même villa ne peut réserver en tant que « joueur remplaçant » pour le même match.
+                                (Les autres joueurs de la même villa ne peuvent réserver qu'en tant que « joueur principal »).
                             </li>
-                            <li>Green slot means that there is available place in the main players in this match</li>
-                            <li>Yellow slot means that there is available in the reserve players and no available place in the main players in this match</li>
-                            <li>Red slot means that there isn't available reservation in this match</li>
-                            <li>Black slot means there isn't any match in this period</li>
+{#                            *Colors code:#}
+                            <li style="font-weight: 800;">Code couleur :</li>
+{#                            - Green slot: Match is open for reservation (main players + reserve players).#}
+                            <li><strong>Vert :</strong> Le match est ouvert à la réservation (joueurs principaux + joueurs remplaçants).</li>
+{#                            - Yellow slot: Match is open for reservation (Reserve players).#}
+                            <li><strong>Jaune :</strong> Le match est ouvert à la réservation (joueurs remplaçants).</li>
+{#                            - Red slot:  Match is completed.#}
+                            <li><strong>Rouge :</strong> Le match est complet.</li>
+{#                            - Black slot: No match.#}
+                            <li><strong>Noir :</strong> Aucun match.</li>
+
                         </ul>
                     </div>
                 </div>
