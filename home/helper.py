@@ -9,14 +9,6 @@ from .variables import *
 
 User = get_user_model()
 
-def get_week_start():
-    """
-    Helper to get the start of the current week (Monday).
-    """
-    current_date = datetime.now()
-    start_of_week = current_date - timedelta(days=current_date.weekday())
-    return start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
-
 
 # Validate whether the match is on off period or not
 def validate_time_slot(date, start_time):
@@ -66,16 +58,17 @@ def validate_reserve_reservation(match, user):
 
 
 # validate match reservation
-def validate_busy_hour_limit(user, player_type):
+def validate_busy_hour_limit(user, player_type, match_start):
     # Count reservations for the user and their sub-users for the current week.
-    start_of_week = get_week_start()
+    today_date = match_start.date()
+    start_of_week = today_date - timedelta(days=today_date.weekday())
     end_of_week = start_of_week + timedelta(days=7)
 
     # Count reservations during busy hours for user
     busy_hour_reservations = Reservation.objects.filter(
         user=user,
-        match__start_time__gte=start_of_week,
-        match__start_time__lt=end_of_week,
+        match__start_time__date__gte=start_of_week,
+        match__start_time__date__lt=end_of_week,
         player_type=player_type,
         match__start_time__hour__gte=busy_hour_start_hour,
         match__end_time__hour__lte=busy_hour_end_hour,
@@ -93,8 +86,8 @@ def validate_busy_hour_limit(user, player_type):
         # Count reservations during busy hours for user
         parent_busy_hour_reservations = Reservation.objects.filter(
             user=user,
-            match__start_time__gte=start_of_week,
-            match__start_time__lt=end_of_week,
+            match__start_time__date__gte=start_of_week,
+            match__start_time__date__lt=end_of_week,
             player_type=player_type,
             match__start_time__hour__gte=busy_hour_start_hour,
             match__end_time__hour__lte=busy_hour_end_hour,
@@ -113,8 +106,8 @@ def validate_busy_hour_limit(user, player_type):
             # Count reservations during busy hours for user
             children_busy_hour_reservations += Reservation.objects.filter(
                 user=sub_user,
-                match__start_time__gte=start_of_week,
-                match__start_time__lt=end_of_week,
+                match__start_time__date__gte=start_of_week,
+                match__start_time__date__lt=end_of_week,
                 player_type=player_type,
                 match__start_time__hour__gte=17,  # Busy hours start at 5 PM
                 match__end_time__hour__lte=20,  # Busy hours end at 8 PM

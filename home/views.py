@@ -282,7 +282,7 @@ def toggle_player_reservation(request):
                          return JsonResponse({'error': "Les joueurs concernés sont des joueurs principaux dans le même match."},
                                                                         status=400)
 
-                        if not validate_busy_hour_limit(user, player_type):
+                        if not validate_busy_hour_limit(user, player_type, match_start):
                             # return JsonResponse(
                             #     {'error': 'You have reached the limit for reservations during busy hours.'},
                             #     status=400)
@@ -303,7 +303,7 @@ def toggle_player_reservation(request):
                         return JsonResponse({'error': "Les joueurs concernés sont des joueurs principaux dans le même match."},
                                             status=400)
 
-                    if not validate_busy_hour_limit(user, player_type):
+                    if not validate_busy_hour_limit(user, player_type, match_start):
                         # return JsonResponse({'error': 'You have reached the limit for reservations during busy hours.'},
                         #                     status=400)
                         return JsonResponse(
